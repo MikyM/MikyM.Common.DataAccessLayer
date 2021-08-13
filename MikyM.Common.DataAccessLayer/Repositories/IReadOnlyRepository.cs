@@ -7,7 +7,7 @@ namespace MikyM.Common.DataAccessLayer.Repositories
 {
     public interface IReadOnlyRepository<TEntity> where TEntity : class
     {
-        Task<TEntity> GetAsync(params object[] keyValues);
+        ValueTask<TEntity> GetAsync(params object[] keyValues);
         Task<IReadOnlyList<TEntity>> GetBySpecificationsAsync(PaginationFilter filter,
             ISpecifications<TEntity> specifications = null);
 

@@ -19,7 +19,7 @@ namespace MikyM.Common.DataAccessLayer.Repositories
             _set = _context.Set<TEntity>();
         }
 
-        public virtual async Task<TEntity> GetAsync(params object[] keyValues)
+        public virtual async ValueTask<TEntity> GetAsync(params object[] keyValues)
         {
             return await _set.FindAsync(keyValues);
         }
