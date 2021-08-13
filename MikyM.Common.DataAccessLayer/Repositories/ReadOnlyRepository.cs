@@ -28,7 +28,7 @@ namespace MikyM.Common.DataAccessLayer.Repositories
             ISpecifications<TEntity> baseSpecifications = null)
         {
             return await SpecificationEvaluator<TEntity>
-                .GetQuery(_context.Set<TEntity>().AsQueryable(), baseSpecifications)
+                .GetQuery(_set.AsQueryable(), baseSpecifications)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -37,7 +37,7 @@ namespace MikyM.Common.DataAccessLayer.Repositories
             ISpecifications<TEntity> baseSpecifications = null)
         {
             return await SpecificationEvaluator<TEntity>
-                .GetQuery(_context.Set<TEntity>().AsQueryable(), baseSpecifications)
+                .GetQuery(_set.AsQueryable(), baseSpecifications)
                 .Skip((filter.PageNumber - 1) * filter.PageSize)
                 .Take(filter.PageSize)
                 .AsNoTracking()
@@ -46,12 +46,12 @@ namespace MikyM.Common.DataAccessLayer.Repositories
 
         public virtual async Task<long> CountAsync()
         {
-            return await _context.Set<TEntity>().AsNoTracking().LongCountAsync();
+            return await _set.AsNoTracking().LongCountAsync();
         }
 
         public virtual async Task<long> CountWhereAsync(ISpecifications<TEntity> specifications = null)
         {
-            return await SpecificationEvaluator<TEntity>.GetQuery(_context.Set<TEntity>().AsQueryable(), specifications)
+            return await SpecificationEvaluator<TEntity>.GetQuery(_set.AsQueryable(), specifications)
                 .AsNoTracking()
                 .LongCountAsync();
         }
