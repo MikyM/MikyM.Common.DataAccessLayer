@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MikyM.Common.DataAccessLayer.Repositories
 {
-    public abstract class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity> where TEntity : class
+    public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity> where TEntity : class
     {
         protected DbContext _context;
         protected readonly DbSet<TEntity> _set;

@@ -5,7 +5,7 @@ using MikyM.Common.DataAccessLayer.Specifications;
 
 namespace MikyM.Common.DataAccessLayer.Repositories
 {
-    public interface IReadOnlyRepository<TEntity> where TEntity : class
+    public interface IReadOnlyRepository<TEntity> : IBaseRepository where TEntity : class
     {
         ValueTask<TEntity> GetAsync(params object[] keyValues);
         Task<IReadOnlyList<TEntity>> GetBySpecificationsAsync(PaginationFilter filter,

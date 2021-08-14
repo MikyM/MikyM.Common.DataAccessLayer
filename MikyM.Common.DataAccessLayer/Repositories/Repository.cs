@@ -7,7 +7,7 @@ using MikyM.Common.DataAccessLayer.Helpers;
 
 namespace MikyM.Common.DataAccessLayer.Repositories
 {
-    public abstract class Repository<TEntity> : ReadOnlyRepository<TEntity>, IRepository<TEntity> where TEntity : class
+    public class Repository<TEntity> : ReadOnlyRepository<TEntity>, IRepository<TEntity> where TEntity : class
     {
         protected Repository(Microsoft.EntityFrameworkCore.DbContext context) : base(context)
         {
