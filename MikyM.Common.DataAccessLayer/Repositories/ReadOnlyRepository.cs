@@ -15,7 +15,7 @@ namespace MikyM.Common.DataAccessLayer.Repositories
 
         protected ReadOnlyRepository(DbContext context)
         {
-            _context = _context ?? throw new ArgumentNullException(nameof(_context));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
             _set = _context.Set<TEntity>();
         }
 
