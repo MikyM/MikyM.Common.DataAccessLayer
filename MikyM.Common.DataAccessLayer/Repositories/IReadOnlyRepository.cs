@@ -12,7 +12,6 @@ namespace MikyM.Common.DataAccessLayer.Repositories
             ISpecifications<TEntity> specifications = null);
 
         Task<IReadOnlyList<TEntity>> GetBySpecificationsAsync(ISpecifications<TEntity> specifications = null);
-        Task<long> CountAsync();
-        Task<long> CountWhereAsync(ISpecifications<TEntity> specifications = null);
+        Task<long> LongCountAsync(ISpecifications<TEntity> specifications = null);
     }
 }

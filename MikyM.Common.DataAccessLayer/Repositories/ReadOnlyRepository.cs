@@ -44,12 +44,7 @@ namespace MikyM.Common.DataAccessLayer.Repositories
                 .ToListAsync();
         }
 
-        public virtual async Task<long> CountAsync()
-        {
-            return await _set.AsNoTracking().LongCountAsync();
-        }
-
-        public virtual async Task<long> CountWhereAsync(ISpecifications<TEntity> specifications = null)
+        public virtual async Task<long> LongCountAsync(ISpecifications<TEntity> specifications = null)
         {
             return await SpecificationEvaluator<TEntity>.GetQuery(_set.AsQueryable(), specifications)
                 .AsNoTracking()

@@ -7,13 +7,13 @@ namespace MikyM.Common.DataAccessLayer.Helpers
 {
     public static class UoFCache
     {
-        public static List<Type> CachedTypes { get; }
+        public static IEnumerable<Type> CachedTypes { get; }
 
         static UoFCache()
         {
             CachedTypes ??= AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(x => x.GetTypes()
-                    .Where(t => t.BaseType == typeof(Repository<>) || t.BaseType == typeof(ReadOnlyRepository<>)))
+                    .Where(t => t.GetInterface(nameof(IBaseRepository)) is not null))
                 .ToList();
         }
     }
