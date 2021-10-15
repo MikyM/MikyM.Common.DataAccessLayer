@@ -13,25 +13,24 @@
 // GNU Affero General Public License for more details.
 // 
 // You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+// along with this program.  If not, see <https://www.gnu.orusing System;
 
-using MikyM.Common.DataAccessLayer.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MikyM.Common.DataAccessLayer.Repositories;
 
 namespace MikyM.Common.DataAccessLayer.Helpers
 {
     public static class UoFCache
     {
-        public static IEnumerable<Type> CachedTypes { get; }
-
         static UoFCache()
         {
             CachedTypes ??= AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(x => x.GetTypes()
-                    .Where(t => t.GetInterface(nameof(IBaseRepository)) is not null))
+                .SelectMany(x => x.GetTypes().Where(t => t.GetInterface(nameof(IBaseRepository)) is not null))
                 .ToList();
         }
+
+        public static IEnumerable<Type> CachedTypes { get; }
     }
 }
