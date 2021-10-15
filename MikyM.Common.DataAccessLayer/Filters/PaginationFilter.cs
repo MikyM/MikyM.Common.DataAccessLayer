@@ -1,4 +1,21 @@
-﻿namespace MikyM.Common.DataAccessLayer.Filters
+﻿// This file is part of MikyM.Common.DataAccessLayer project
+//
+// Copyright (C) 2021 MikyM
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+// 
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+namespace MikyM.Common.DataAccessLayer.Filters
 {
     public class PaginationFilter
     {
@@ -6,13 +23,13 @@
         public int PageSize { get; set; }
         public PaginationFilter()
         {
-            this.PageNumber = 1;
-            this.PageSize = 10;
+            PageNumber = 1;
+            PageSize = 10;
         }
         public PaginationFilter(int pageNumber, int pageSize)
         {
-            this.PageNumber = pageNumber < 1 ? 1 : pageNumber;
-            this.PageSize = pageSize > 10 ? 10 : pageSize;
+            PageNumber = pageNumber < 1 ? 1 : pageNumber;
+            PageSize = pageSize > 10 ? 10 : pageSize;
         }
     }
 }

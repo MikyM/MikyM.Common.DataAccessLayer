@@ -15,21 +15,28 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using MikyM.Common.DataAccessLayer.Filters;
-using MikyM.Common.DataAccessLayer.Specifications;
-using MikyM.Common.Domain.Entities;
+using System;
 
-namespace MikyM.Common.DataAccessLayer.Repositories
+namespace MikyM.Common.Domain.Entities
 {
-    public interface IReadOnlyRepository<TEntity> : IBaseRepository where TEntity : AggregateRootEntity
+    public enum AuditType
     {
-        ValueTask<TEntity> GetAsync(params object[] keyValues);
-        Task<IReadOnlyList<TEntity>> GetBySpecificationsAsync(PaginationFilter filter,
-            ISpecifications<TEntity> specifications = null);
+        None = 0,
+        Create = 1,
+        Update = 2,
+        Disable = 3,
+        Delete = 4
+    }
 
-        Task<IReadOnlyList<TEntity>> GetBySpecificationsAsync(ISpecifications<TEntity> specifications = null);
-        Task<long> LongCountAsync(ISpecifications<TEntity> specifications = null);
+    public class Audit : EnvironmentSpecificEntity
+    {
+        public string UserId { get; set; }
+        public string Type { get; set; }
+        public string TableName { get; set; }
+        public DateTime DateTime { get; set; }
+        public string OldValues { get; set; }
+        public string NewValues { get; set; }
+        public string AffectedColumns { get; set; }
+        public string PrimaryKey { get; set; }
     }
 }
