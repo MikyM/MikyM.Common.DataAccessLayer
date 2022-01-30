@@ -18,14 +18,8 @@
 		<PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
 		<PackageReference Include="MikyM.Autofac.Extensions" Version="1.0.0" />
+		<PackageReference Include="MikyM.Common.Domain" Version="1.0.0" />
 		<PackageReference Include="MikyM.Common.Utilities" Version="1.0.2" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\MikyM.Common.Domain\MikyM.Common.Domain.csproj">
-			<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-			<IncludeAssets>MikyM.Common.Domain.dll</IncludeAssets>
-		</ProjectReference>
 	</ItemGroup>
 
 </Project>
