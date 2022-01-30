@@ -1,4 +1,4 @@
-﻿// This file is part of MikyM.Common.DataAccessLayer project
+﻿// This file is part of Lisbeth.Bot project
 //
 // Copyright (C) 2021 Krzysztof Kupisz - MikyM
 // 
@@ -16,28 +16,71 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using Autofac;
-using Microsoft.Extensions.DependencyInjection;
-using MikyM.Common.DataAccessLayer.Repositories;
-using MikyM.Common.DataAccessLayer.UnitOfWork;
+using MikyM.Autofac.Extensions;
+using MikyM.Common.DataAccessLayer.Specifications;
+using System.Collections.Generic;
+using System.Diagnostics;
+using MikyM.Autofac.Extensions.Extensions;
+using MikyM.Common.DataAccessLayer.Specifications.Validators;
 
-namespace MikyM.Common.DataAccessLayer
+namespace MikyM.Common.DataAccessLayer;
+
+public static class DependancyInjectionExtensions
 {
-    public static class DependancyInjectionExtensions
+    public static void AddDataAccessLayer(this ContainerBuilder builder, Action<DataAccessOptions>? options = null)
     {
-        public static void AddDataAccessLayer(this IServiceCollection services)
+        var config = new DataAccessOptions(builder);
+        options?.Invoke(config);
+
+        var ctorFinder = new AllConstructorsFinder();
+
+        builder.RegisterGeneric(typeof(ReadOnlyRepository<>))
+            .As(typeof(IReadOnlyRepository<>))
+            .FindConstructorsWith(ctorFinder)
+            .InstancePerLifetimeScope();
+        builder.RegisterGeneric(typeof(Repository<>))
+            .As(typeof(IRepository<>))
+            .FindConstructorsWith(ctorFinder)
+            .InstancePerLifetimeScope();
+        builder.RegisterGeneric(typeof(UnitOfWork<>)).As(typeof(IUnitOfWork<>)).InstancePerLifetimeScope();
+
+        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
-            services.AddScoped(typeof(IReadOnlyRepository<>), typeof(ReadOnlyRepository<>));
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped(typeof(IUnitOfWork<>), typeof(UnitOfWork<>));
+            builder.RegisterAssemblyTypes(assembly)
+                .Where(x => x.GetInterface(nameof(IEvaluator)) is not null && x != typeof(IncludeEvaluator))
+                .As<IEvaluator>()
+                .FindConstructorsWith(ctorFinder)
+                .SingleInstance();
         }
-        
-        public static void AddDataAccessLayer(this ContainerBuilder builder)
-        {
-            builder.RegisterGeneric(typeof(ReadOnlyRepository<>)).As(typeof(IReadOnlyRepository<>))
-                .InstancePerLifetimeScope();
-            builder.RegisterGeneric(typeof(Repository<>)).As(typeof(IRepository<>))
-                .InstancePerLifetimeScope();
-            builder.RegisterGeneric(typeof(UnitOfWork<>)).As(typeof(IUnitOfWork<>)).InstancePerLifetimeScope();
-        }
+
+        builder.RegisterType<IncludeEvaluator>()
+            .As<IEvaluator>()
+            .UsingConstructor(typeof(bool))
+            .FindConstructorsWith(ctorFinder)
+            .WithParameter(new TypedParameter(typeof(bool), config.EnableIncludeCache))
+            .SingleInstance();
+
+        builder.RegisterType<ProjectionEvaluator>()
+            .As<IProjectionEvaluator>()
+            .FindConstructorsWith(ctorFinder)
+            .SingleInstance();
+
+        builder.RegisterType<SpecificationEvaluator>()
+            .As<ISpecificationEvaluator>()
+            .UsingConstructor(typeof(IEnumerable<IEvaluator>), typeof(IProjectionEvaluator))
+            .FindConstructorsWith(ctorFinder)
+            .SingleInstance();
+
+        builder.RegisterType<SpecificationValidator>()
+            .As<ISpecificationValidator>()
+            .UsingConstructor(typeof(IEnumerable<IValidator>))
+            .FindConstructorsWith(ctorFinder)
+            .SingleInstance();
+
+        builder.RegisterType<InMemorySpecificationEvaluator>()
+            .As<IInMemorySpecificationEvaluator>()
+            .UsingConstructor(typeof(IEnumerable<IInMemoryEvaluator>))
+            .FindConstructorsWith(ctorFinder)
+            .SingleInstance();
     }
 }

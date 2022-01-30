@@ -1,4 +1,4 @@
-﻿// This file is part of MikyM.Common.DataAccessLayer project
+﻿// This file is part of Lisbeth.Bot project
 //
 // Copyright (C) 2021 Krzysztof Kupisz - MikyM
 // 
@@ -15,10 +15,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace MikyM.Common.Domain.Entities
-{
-    public class AggregateRootEntity : Entity
-    {
+namespace MikyM.Common.Domain.Entities;
 
-    }
+public class AggregateRootEntity : Entity
+{
 }

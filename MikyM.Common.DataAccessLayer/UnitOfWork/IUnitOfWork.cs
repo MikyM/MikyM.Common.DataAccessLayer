@@ -1,4 +1,4 @@
-﻿// This file is part of MikyM.Common.DataAccessLayer project
+﻿// This file is part of Lisbeth.Bot project
 //
 // Copyright (C) 2021 Krzysztof Kupisz - MikyM
 // 
@@ -15,19 +15,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using MikyM.Common.DataAccessLayer.Repositories;
+namespace MikyM.Common.DataAccessLayer.UnitOfWork;
 
-namespace MikyM.Common.DataAccessLayer.UnitOfWork
+public interface IUnitOfWork<TContext> : IDisposable where TContext : DbContext
 {
-    public interface IUnitOfWork<TContext> : IDisposable where TContext : DbContext
-    {
-        TContext Context { get; }
-        TRepository GetRepository<TRepository>() where TRepository : IBaseRepository;
-        Task<int> CommitAsync();
-        Task RollbackAsync();
-        Task UseTransaction();
-    }
+    TContext Context { get; }
+    TRepository GetRepository<TRepository>() where TRepository : class, IBaseRepository;
+    Task<int> CommitAsync();
+    Task<int> CommitAsync(string? userId);
+    Task RollbackAsync();
+    Task UseTransaction();
 }

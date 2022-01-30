@@ -1,4 +1,4 @@
-﻿// This file is part of MikyM.Common.DataAccessLayer project
+﻿// This file is part of Lisbeth.Bot project
 //
 // Copyright (C) 2021 Krzysztof Kupisz - MikyM
 // 
@@ -15,28 +15,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
-namespace MikyM.Common.Domain.Entities
+namespace MikyM.Common.DataAccessLayer;
+
+// ReSharper disable once InconsistentNaming
+public static class IEnumerableExtensions
 {
-    public enum AuditType
-    {
-        None = 0,
-        Create = 1,
-        Update = 2,
-        Disable = 3,
-        Delete = 4
-    }
+    public static bool AnyNullable<T>([NotNullWhen(true)] this IEnumerable<T>? source, Func<T, bool> predicate)
+        => source is not null && source.Any(predicate);
 
-    public class Audit : EnvironmentSpecificEntity
-    {
-        public string UserId { get; set; }
-        public string Type { get; set; }
-        public string TableName { get; set; }
-        public DateTime DateTime { get; set; }
-        public string OldValues { get; set; }
-        public string NewValues { get; set; }
-        public string AffectedColumns { get; set; }
-        public string PrimaryKey { get; set; }
-    }
+
+    public static bool AnyNullable<T>([NotNullWhen(true)] this IEnumerable<T>? source)
+        => source is not null && source.Any();
 }

@@ -1,4 +1,4 @@
-﻿// This file is part of MikyM.Common.DataAccessLayer project
+﻿// This file is part of Lisbeth.Bot project
 //
 // Copyright (C) 2021 Krzysztof Kupisz - MikyM
 // 
@@ -15,100 +15,96 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using System.Collections.Concurrent;
 using Microsoft.EntityFrameworkCore.Storage;
-using MikyM.Common.DataAccessLayer.Helpers;
-using MikyM.Common.DataAccessLayer.Repositories;
+using System.Collections.Generic;
+using Autofac;
+using Autofac.Core;
 
-namespace MikyM.Common.DataAccessLayer.UnitOfWork
+namespace MikyM.Common.DataAccessLayer.UnitOfWork;
+
+public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : AuditableDbContext
 {
-    public class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : DbContext
+    private readonly ILifetimeScope _lifetimeScope;
+
+    // To detect redundant calls
+    private bool _disposed;
+    // ReSharper disable once InconsistentNaming
+    private ConcurrentDictionary<string, IBaseRepository>? _repositories;
+    private IDbContextTransaction? _transaction;
+
+    public UnitOfWork(TContext context, ILifetimeScope lifetimeScope)
     {
-        // To detect redundant calls
-        private bool _disposed;
-        protected Dictionary<string, IBaseRepository> _repositories;
-        private IDbContextTransaction _transaction;
+        Context = context;
+        _lifetimeScope = lifetimeScope;
+    }
 
-        public UnitOfWork(TContext context)
+    public TContext Context { get; }
+
+    public async Task UseTransaction()
+    {
+        _transaction ??= await Context.Database.BeginTransactionAsync();
+    }
+
+    public TRepository GetRepository<TRepository>() where TRepository : class, IBaseRepository
+    {
+        _repositories ??= new ConcurrentDictionary<string, IBaseRepository>();
+
+        var type = typeof(TRepository);
+        string name = type.FullName ?? throw new InvalidOperationException();
+
+        if (_repositories.TryGetValue(name, out var repository)) return (TRepository) repository;
+
+        if (_repositories.TryAdd(name,
+                _lifetimeScope.Resolve<TRepository>(new ResolvedParameter(
+                    (pi, _) => pi.ParameterType.IsAssignableTo(typeof(DbContext)), (_, _) => Context))))
+            return (TRepository)_repositories[name];
+
+        if (_repositories.TryGetValue(name, out repository)) return (TRepository) repository;
+
+        throw new InvalidOperationException(
+            $"Repository of type {name} couldn't be added to and/or retrieved.");
+    }
+
+    public async Task RollbackAsync()
+    {
+        if (_transaction is not null) await _transaction.RollbackAsync();
+    }
+
+    public async Task<int> CommitAsync()
+    {
+        int result = await Context.SaveChangesAsync();
+        if (_transaction is not null) await _transaction.CommitAsync();
+        return result;
+    }
+
+    public async Task<int> CommitAsync(string? userId)
+    {
+        int result = await Context.SaveChangesAsync(userId);
+        if (_transaction is not null) await _transaction.CommitAsync();
+        return result;
+    }
+
+    // Public implementation of Dispose pattern callable by consumers.
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    // Protected implementation of Dispose pattern.
+    private void Dispose(bool disposing)
+    {
+        if (_disposed) return;
+
+        if (disposing)
         {
-            Context = context;
+            Context.Dispose();
+            _transaction?.Dispose();
         }
 
-        public TContext Context { get; }
+        _repositories = null;
 
-        public virtual async Task UseTransaction()
-        {
-            _transaction ??= await Context.Database.BeginTransactionAsync();
-        }
-
-        public virtual TRepository GetRepository<TRepository>() where TRepository : IBaseRepository
-        {
-            _repositories ??= new Dictionary<string, IBaseRepository>();
-
-            var type = typeof(TRepository);
-            string name = type.FullName;
-
-            if (_repositories.TryGetValue(name, out var repository)) return (TRepository) repository;
-
-            var concrete =
-                UoFCache.CachedTypes.FirstOrDefault(x => type.IsAssignableFrom(x) && !x.IsAbstract && !x.IsInterface);
-
-            if (concrete is not null)
-            {
-                string concreteName = concrete.FullName;
-
-                if (_repositories.TryGetValue(concreteName, out var concreteRepo)) return (TRepository) concreteRepo;
-
-                if (_repositories.TryAdd(concreteName, (TRepository) Activator.CreateInstance(concrete, Context)))
-                    return (TRepository) _repositories[concreteName];
-                throw new ArgumentException(
-                    $"Concrete repository of type {concreteName} couldn't be added to and/or retrieved from cache.");
-            }
-
-            if (_repositories.TryAdd(name, (TRepository) Activator.CreateInstance(type, Context)))
-                return (TRepository) _repositories[name];
-
-            throw new ArgumentException(
-                $"Concrete repository of type {name} couldn't be added to and/or retrieved from cache.");
-        }
-
-        public virtual async Task RollbackAsync()
-        {
-            if (_transaction is not null) await _transaction.RollbackAsync();
-        }
-
-        public virtual async Task<int> CommitAsync()
-        {
-            int result = await Context.SaveChangesAsync();
-            if (_transaction is not null) await _transaction.CommitAsync();
-            return result;
-        }
-
-        // Public implementation of Dispose pattern callable by consumers.
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        // Protected implementation of Dispose pattern.
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed) return;
-
-            if (disposing)
-            {
-                Context?.Dispose();
-                _transaction?.Dispose();
-            }
-
-            _repositories = null;
-
-            _disposed = true;
-        }
+        _disposed = true;
     }
 }
