@@ -1,25 +1,9 @@
-﻿// This file is part of Lisbeth.Bot project
-//
-// Copyright (C) 2021 Krzysztof Kupisz - MikyM
-// 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-// 
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-using AutoMapper;
+﻿using AutoMapper;
 using MikyM.Common.DataAccessLayer.Filters;
 using MikyM.Common.DataAccessLayer.Specifications.Exceptions;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using EFCoreSecondLevelCacheInterceptor;
 using MikyM.Common.DataAccessLayer.Specifications.Expressions;
 using MikyM.Common.DataAccessLayer.Specifications.Helpers;
 
@@ -252,7 +236,15 @@ public static class SpecificationBuilderExtensions
 
         return specificationBuilder;
     }
-
+    
+    /// <summary>
+    /// Expands given member.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="specificationBuilder">This builder instance</param>
+    /// <param name="expression">Member to expand</param>
+    /// <returns>Current builder instance</returns>
     public static ISpecificationBuilder<T, TResult> Expand<T, TResult>(
         this ISpecificationBuilder<T, TResult> specificationBuilder, Expression<Func<TResult, object>> expression)
         where T : class where TResult : class
@@ -271,6 +263,15 @@ public static class SpecificationBuilderExtensions
 
         return specificationBuilder;
     }
+
+    /// <summary>
+    /// Adds automapper configuration.
+    /// </summary>
+    /// <typeparam name="T">Entity type</typeparam>
+    /// <typeparam name="TResult">Result type</typeparam>
+    /// <param name="specificationBuilder">Current builder</param>
+    /// <param name="mapperConfiguration"><see cref="MapperConfiguration"/> instance</param>
+    /// <returns>Current builder instance</returns>
     public static ISpecificationBuilder<T, TResult> WithMapperConfiguration<T, TResult>(
         this ISpecificationBuilder<T, TResult> specificationBuilder,
         MapperConfiguration mapperConfiguration) where T : class where TResult : class
@@ -344,6 +345,12 @@ public static class SpecificationBuilderExtensions
         return specificationBuilder;
     }
 
+    /// <summary>
+    /// Specify a <see cref="PaginationFilter"/> to use
+    /// </summary>
+    /// <param name="specificationBuilder"></param>
+    /// <param name="paginationFilter"><see cref="PaginationFilter"/> to use</param>
+    /// <returns>Current <see cref="ISpecificationBuilder{T,TResult}"/> instance</returns>
     public static ISpecificationBuilder<T> WithPaginationFilter<T>(
         this ISpecificationBuilder<T> specificationBuilder,
         PaginationFilter paginationFilter) where T : class
@@ -386,8 +393,11 @@ public static class SpecificationBuilderExtensions
 
 
     /// <summary>
-    ///     Explicitly enables or disables caching for this query.
+    /// Specify whether results should be cached using <see cref="SecondLevelCacheInterceptor"/>.
     /// </summary>
+    /// <param name="specificationBuilder"></param>
+    /// <param name="withCaching">Whether to cache results</param>
+    /// <returns><see cref="ICacheSpecificationBuilder{T}"/> instance</returns>
     public static ICacheSpecificationBuilder<T> WithCaching<T>(
         this ISpecificationBuilder<T> specificationBuilder, bool withCaching = true) where T : class
     {
@@ -396,6 +406,10 @@ public static class SpecificationBuilderExtensions
         return new CacheSpecificationBuilder<T>(specificationBuilder.Specification);
     }
 
+    /// <summary>
+    /// Specify whether to use tracking for this query (default setting is AsNoTracking)/>
+    /// </summary>
+    /// <returns><see cref="ISpecificationBuilder{T}"/> instance</returns>
     public static ISpecificationBuilder<T> AsTracking<T>(
         this ISpecificationBuilder<T> specificationBuilder) where T : class
     {
@@ -404,6 +418,10 @@ public static class SpecificationBuilderExtensions
         return specificationBuilder;
     }
 
+    /// <summary>
+    /// Specify whether to use tracking use split query
+    /// </summary>
+    /// <returns><see cref="ISpecificationBuilder{T}"/> instance</returns>
     public static ISpecificationBuilder<T> AsSplitQuery<T>(
         this ISpecificationBuilder<T> specificationBuilder) where T : class
     {
@@ -412,6 +430,10 @@ public static class SpecificationBuilderExtensions
         return specificationBuilder;
     }
 
+    /// <summary>
+    /// Specify whether to use AsNoTrackingWithIdentityResolution
+    /// </summary>
+    /// <returns><see cref="ISpecificationBuilder{T}"/> instance</returns>
     public static ISpecificationBuilder<T> AsNoTrackingWithIdentityResolution<T>(
         this ISpecificationBuilder<T> specificationBuilder) where T : class
     {

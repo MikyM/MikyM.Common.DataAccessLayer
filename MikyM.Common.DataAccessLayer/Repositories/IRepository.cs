@@ -1,37 +1,74 @@
-﻿// This file is part of Lisbeth.Bot project
-//
-// Copyright (C) 2021 Krzysztof Kupisz - MikyM
-// 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-// 
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MikyM.Common.Domain.Entities;
 
 namespace MikyM.Common.DataAccessLayer.Repositories;
 
+/// <summary>
+/// Repository
+/// </summary>
+/// <typeparam name="TEntity">Entity that derives from <see cref="AggregateRootEntity"/></typeparam>
 public interface IRepository<TEntity> : IReadOnlyRepository<TEntity> where TEntity : AggregateRootEntity
 {
+    /// <summary>
+    /// Adds an entity
+    /// </summary>
+    /// <param name="entity">Entity to add</param>
     void Add(TEntity entity);
+    /// <summary>
+    /// Adds a range of entities
+    /// </summary>
+    /// <param name="entities">Entities to add</param>
     void AddRange(IEnumerable<TEntity> entities);
+    /// <summary>
+    /// Begins updating an entity
+    /// </summary>
+    /// <param name="entity">Entity to track</param>
+    /// <param name="shouldSwapAttached">Whether to swap attached entity if one with same primary key is already attached to <see cref="DbContext"/></param>
     void BeginUpdate(TEntity entity, bool shouldSwapAttached = false);
+    /// <summary>
+    /// Begins updating a range of entities
+    /// </summary>
+    /// <param name="entities">Entities to track</param>
+    /// <param name="shouldSwapAttached">Whether to swap attached entities if entities with same primary keys are already attached to <see cref="DbContext"/></param>
     void BeginUpdateRange(IEnumerable<TEntity> entities, bool shouldSwapAttached = false);
+    /// <summary>
+    /// Deletes an entity
+    /// </summary>
+    /// <param name="entity">Entity to delete</param>
     void Delete(TEntity entity);
+    /// <summary>
+    /// Deletes an entity
+    /// </summary>
+    /// <param name="id">Id of the entity to delete</param>
     void Delete(long id);
+    /// <summary>
+    /// Deletes a range of entities
+    /// </summary>
+    /// <param name="entities">Entities to delete</param>
     void DeleteRange(IEnumerable<TEntity> entities);
+    /// <summary>
+    /// Deletes a range of entities
+    /// </summary>
+    /// <param name="ids">Ids of the entities to delete</param>
     void DeleteRange(IEnumerable<long> ids);
+    /// <summary>
+    /// Disables an entity
+    /// </summary>
+    /// <param name="entity">Entity to disable</param>
     void Disable(TEntity entity);
+    /// <summary>
+    /// Disables an entity
+    /// </summary>
+    /// <param name="id">Id of the entity to disable</param>
     Task DisableAsync(long id);
+    /// <summary>
+    /// Disables a range of entities
+    /// </summary>
+    /// <param name="entities">Entities to disable</param>
     void DisableRange(IEnumerable<TEntity> entities);
+    /// <summary>
+    /// Disables a range of entities
+    /// </summary>
+    /// <param name="ids">Ids of the entities to disable</param>
     Task DisableRangeAsync(IEnumerable<long> ids);
 }

@@ -1,32 +1,30 @@
-﻿// This file is part of Lisbeth.Bot project
-//
-// Copyright (C) 2021 Krzysztof Kupisz - MikyM
-// 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-// 
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MikyM.Common.DataAccessLayer;
 
 // ReSharper disable once InconsistentNaming
+/// <summary>
+/// <see cref="IEnumerable{T}"/> extensions.
+/// </summary>
 public static class IEnumerableExtensions
 {
+    /// <summary>
+    /// LINQ extensions for Any method supporting nullable types.
+    /// </summary>
+    /// <typeparam name="T">Type wrapped by the <see cref="IEnumerable{T}"/></typeparam>
+    /// <param name="source"><see cref="IEnumerable{T}"/> source </param>
+    /// <param name="predicate">Given predicate</param>
+    /// <returns>Whether a sequence contains elements that satisfy <paramref name="predicate"/>, if given sequence is null returns false.</returns>
     public static bool AnyNullable<T>([NotNullWhen(true)] this IEnumerable<T>? source, Func<T, bool> predicate)
         => source is not null && source.Any(predicate);
 
-
+    /// <summary>
+    /// LINQ extensions for Any method supporting nullable types.
+    /// </summary>
+    /// <typeparam name="T">Type wrapped by the <see cref="IEnumerable{T}"/></typeparam>
+    /// <param name="source"><see cref="IEnumerable{T}"/> source </param>
+    /// <returns>Whether a sequence contains any elements, if given sequence is null returns false.</returns>
     public static bool AnyNullable<T>([NotNullWhen(true)] this IEnumerable<T>? source)
         => source is not null && source.Any();
 }

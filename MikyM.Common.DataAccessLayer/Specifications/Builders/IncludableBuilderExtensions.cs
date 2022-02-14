@@ -1,21 +1,4 @@
-﻿// This file is part of Lisbeth.Bot project
-//
-// Copyright (C) 2021 Krzysztof Kupisz - MikyM
-// 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-// 
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-using MikyM.Common.DataAccessLayer.Specifications.Expressions;
+﻿using MikyM.Common.DataAccessLayer.Specifications.Expressions;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
@@ -23,12 +6,31 @@ namespace MikyM.Common.DataAccessLayer.Specifications.Builders;
 
 public static class IncludableBuilderExtensions
 {
+    /// <summary>
+    /// Specify a nested member to include
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <typeparam name="TPreviousProperty"></typeparam>
+    /// <typeparam name="TProperty"></typeparam>
+    /// <param name="previousBuilder"></param>
+    /// <param name="thenIncludeExpression">Nested member to include</param>
+    /// <returns>Current <see cref="IIncludableSpecificationBuilder{T,TProperty}"/> instance</returns>
     public static IIncludableSpecificationBuilder<TEntity, TProperty> ThenInclude<TEntity, TPreviousProperty, TProperty>(
         this IIncludableSpecificationBuilder<TEntity, TPreviousProperty> previousBuilder,
         Expression<Func<TPreviousProperty, TProperty>> thenIncludeExpression)
         where TEntity : class
         => ThenInclude(previousBuilder, thenIncludeExpression, true);
 
+    /// <summary>
+    /// Specify a nested member to include
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <typeparam name="TPreviousProperty"></typeparam>
+    /// <typeparam name="TProperty"></typeparam>
+    /// <param name="previousBuilder"></param>
+    /// <param name="thenIncludeExpression">Nested member to include</param>
+    /// <param name="condition">Condition as to when should given member be included</param>
+    /// <returns>Current <see cref="IIncludableSpecificationBuilder{T,TProperty}"/> instance</returns>
     public static IIncludableSpecificationBuilder<TEntity, TProperty> ThenInclude<TEntity, TPreviousProperty, TProperty>(
         this IIncludableSpecificationBuilder<TEntity, TPreviousProperty> previousBuilder,
         Expression<Func<TPreviousProperty, TProperty>> thenIncludeExpression,
@@ -39,7 +41,8 @@ public static class IncludableBuilderExtensions
         {
             var info = new IncludeExpressionInfo(thenIncludeExpression, typeof(TEntity), typeof(TProperty), typeof(TPreviousProperty));
 
-            ((List<IncludeExpressionInfo>)previousBuilder.Specification.IncludeExpressions)?.Add(info);
+            previousBuilder.Specification.IncludeExpressions ??= new List<IncludeExpressionInfo>();
+            ((List<IncludeExpressionInfo>)previousBuilder.Specification.IncludeExpressions).Add(info);
         }
 
         var includeBuilder = new IncludableSpecificationBuilder<TEntity, TProperty>(previousBuilder.Specification, !condition || previousBuilder.IsChainDiscarded);
@@ -47,12 +50,31 @@ public static class IncludableBuilderExtensions
         return includeBuilder;
     }
 
+    /// <summary>
+    /// Specify a nested member to include
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <typeparam name="TPreviousProperty"></typeparam>
+    /// <typeparam name="TProperty"></typeparam>
+    /// <param name="previousBuilder"></param>
+    /// <param name="thenIncludeExpression">Nested member to include</param>
+    /// <returns>Current <see cref="IIncludableSpecificationBuilder{T,TProperty}"/> instance</returns>
     public static IIncludableSpecificationBuilder<TEntity, TProperty> ThenInclude<TEntity, TPreviousProperty, TProperty>(
         this IIncludableSpecificationBuilder<TEntity, IEnumerable<TPreviousProperty>> previousBuilder,
         Expression<Func<TPreviousProperty, TProperty>> thenIncludeExpression)
         where TEntity : class
         => ThenInclude(previousBuilder, thenIncludeExpression, true);
 
+    /// <summary>
+    /// Specify a nested member to include
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <typeparam name="TPreviousProperty"></typeparam>
+    /// <typeparam name="TProperty"></typeparam>
+    /// <param name="previousBuilder"></param>
+    /// <param name="thenIncludeExpression">Nested member to include</param>
+    /// <param name="condition">Condition as to when should given member be included</param>
+    /// <returns>Current <see cref="IIncludableSpecificationBuilder{T,TProperty}"/> instance</returns>
     public static IIncludableSpecificationBuilder<TEntity, TProperty> ThenInclude<TEntity, TPreviousProperty, TProperty>(
         this IIncludableSpecificationBuilder<TEntity, IEnumerable<TPreviousProperty>> previousBuilder,
         Expression<Func<TPreviousProperty, TProperty>> thenIncludeExpression,
@@ -63,7 +85,8 @@ public static class IncludableBuilderExtensions
         {
             var info = new IncludeExpressionInfo(thenIncludeExpression, typeof(TEntity), typeof(TProperty), typeof(IEnumerable<TPreviousProperty>));
 
-            ((List<IncludeExpressionInfo>)previousBuilder.Specification.IncludeExpressions)?.Add(info);
+            previousBuilder.Specification.IncludeExpressions ??= new List<IncludeExpressionInfo>();
+            ((List<IncludeExpressionInfo>)previousBuilder.Specification.IncludeExpressions).Add(info);
         }
 
         var includeBuilder = new IncludableSpecificationBuilder<TEntity, TProperty>(previousBuilder.Specification, !condition || previousBuilder.IsChainDiscarded);

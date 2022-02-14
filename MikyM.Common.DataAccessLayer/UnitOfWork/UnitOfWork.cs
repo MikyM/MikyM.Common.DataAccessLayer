@@ -15,24 +15,43 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System.Collections.Concurrent;
-using Microsoft.EntityFrameworkCore.Storage;
-using System.Collections.Generic;
 using Autofac;
 using Autofac.Core;
+using Microsoft.EntityFrameworkCore.Storage;
+using System.Collections.Concurrent;
 
 namespace MikyM.Common.DataAccessLayer.UnitOfWork;
 
+/// <summary>
+/// Unit of work implementation
+/// </summary>
+/// <inheritdoc cref="IUnitOfWork{TContext}"/>
 public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : AuditableDbContext
 {
+    /// <summary>
+    /// Inner root <see cref="ILifetimeScope"/>
+    /// </summary>
     private readonly ILifetimeScope _lifetimeScope;
 
     // To detect redundant calls
     private bool _disposed;
     // ReSharper disable once InconsistentNaming
+
+    /// <summary>
+    /// Repository cache
+    /// </summary>
     private ConcurrentDictionary<string, IBaseRepository>? _repositories;
+
+    /// <summary>
+    /// Inner <see cref="IDbContextTransaction"/>
+    /// </summary>
     private IDbContextTransaction? _transaction;
 
+    /// <summary>
+    /// Creates a new instance of <see cref="UnitOfWork{TContext}"/>
+    /// </summary>
+    /// <param name="context"><see cref="DbContext"/> to be used</param>
+    /// <param name="lifetimeScope">Root <see cref="ILifetimeScope"/></param>
     public UnitOfWork(TContext context, ILifetimeScope lifetimeScope)
     {
         Context = context;

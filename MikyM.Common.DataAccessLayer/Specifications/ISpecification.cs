@@ -1,21 +1,4 @@
-﻿// This file is part of Lisbeth.Bot project
-//
-// Copyright (C) 2021 Krzysztof Kupisz - MikyM
-// 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-// 
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-using AutoMapper;
+﻿using AutoMapper;
 using EFCoreSecondLevelCacheInterceptor;
 using MikyM.Common.DataAccessLayer.Filters;
 using MikyM.Common.DataAccessLayer.Specifications.Expressions;
@@ -32,10 +15,19 @@ namespace MikyM.Common.DataAccessLayer.Specifications;
 /// <typeparam name="TResult">The type of the result to project results to with Automapper's ProjectTo.</typeparam>
 public interface ISpecification<T, TResult> : ISpecification<T> where T : class
 {
+    /// <summary>
+    /// Automapper configuration
+    /// </summary>
     MapperConfiguration? MapperConfiguration { get; }
 
+    /// <summary>
+    /// Members to expand
+    /// </summary>
     IEnumerable<Expression<Func<TResult, object>>>? MembersToExpand { get; }
 
+    /// <summary>
+    /// Members to expand
+    /// </summary>
     IEnumerable<string>? StringMembersToExpand { get; }
 
     /// <summary>

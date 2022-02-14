@@ -1,32 +1,24 @@
-﻿// This file is part of Lisbeth.Bot project
-//
-// Copyright (C) 2021 Krzysztof Kupisz - MikyM
-// 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-// 
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-using Autofac;
+﻿using Autofac;
 using MikyM.Autofac.Extensions;
 using MikyM.Common.DataAccessLayer.Specifications;
-using System.Collections.Generic;
-using System.Diagnostics;
-using MikyM.Autofac.Extensions.Extensions;
 using MikyM.Common.DataAccessLayer.Specifications.Validators;
+using System.Collections.Generic;
 
 namespace MikyM.Common.DataAccessLayer;
 
+/// <summary>
+/// DI extensions for <see cref="ContainerBuilder"/>
+/// </summary>
 public static class DependancyInjectionExtensions
 {
+    /// <summary>
+    /// Adds Data Access Layer to the application.
+    /// </summary>
+    /// <remarks>
+    /// Automatically registers <see cref="IRepository{TEntity}"/>, <see cref="IReadOnlyRepository{TEntity}"/>, all base <see cref="IEvaluator"/> types, <see cref="ISpecificationValidator"/>, <see cref="IInMemorySpecificationEvaluator"/>, <see cref="ISpecificationEvaluator"/>, <see cref="IUnitOfWork{TContext}"/> with <see cref="ContainerBuilder"/>.
+    /// </remarks>
+    /// <param name="builder">Current instance of <see cref="ContainerBuilder"/></param>
+    /// <param name="options"><see cref="Action"/> that configures DAL.</param>
     public static void AddDataAccessLayer(this ContainerBuilder builder, Action<DataAccessOptions>? options = null)
     {
         var config = new DataAccessOptions(builder);

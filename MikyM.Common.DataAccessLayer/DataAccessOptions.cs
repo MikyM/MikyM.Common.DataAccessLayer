@@ -21,6 +21,9 @@ using MikyM.Common.DataAccessLayer.Specifications.Validators;
 
 namespace MikyM.Common.DataAccessLayer;
 
+/// <summary>
+/// Options for Data Access Layer.
+/// </summary>
 public class DataAccessOptions
 {
     public DataAccessOptions(ContainerBuilder builder)
@@ -30,8 +33,16 @@ public class DataAccessOptions
 
     private readonly ContainerBuilder _builder;
 
+    /// <summary>
+    /// Whether to cache include expressions (queries are evaluated faster).
+    /// </summary>
     public bool EnableIncludeCache { get; set; } = false;
 
+    /// <summary>
+    /// Adds a given custom evaluator that implements <see cref="IEvaluator"/> interface.
+    /// </summary>
+    /// <typeparam name="TEvaluator">Type to register</typeparam>
+    /// <returns>Current <see cref="DataAccessOptions"/> instance</returns>
     public DataAccessOptions AddEvaluator<TEvaluator>() where TEvaluator : class, IEvaluator
     {
         _builder.RegisterType(typeof(TEvaluator))
@@ -42,6 +53,11 @@ public class DataAccessOptions
         return this;
     }
 
+    /// <summary>
+    /// Adds a given custom evaluator that implements <see cref="IEvaluator"/> interface.
+    /// </summary>
+    /// <param name="evaluator">Type of the custom evaluator</param>
+    /// <returns>Current <see cref="DataAccessOptions"/> instance</returns>
     public DataAccessOptions AddEvaluator(Type evaluator)
     {
         if (evaluator.GetInterface(nameof(IEvaluator)) is null)
@@ -55,6 +71,10 @@ public class DataAccessOptions
         return this;
     }
 
+    /// <summary>
+    /// Adds all evaluators that implement <see cref="IInMemoryEvaluator"/> from all assemblies.
+    /// </summary>
+    /// <returns>Current <see cref="DataAccessOptions"/> instance</returns>
     public DataAccessOptions AddInMemoryEvaluators()
     {
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -69,6 +89,10 @@ public class DataAccessOptions
         return this;
     }
 
+    /// <summary>
+    /// Adds all validators that implement <see cref="IValidator"/> from all assemblies.
+    /// </summary>
+    /// <returns>Current <see cref="DataAccessOptions"/> instance</returns>
     public DataAccessOptions AddValidators()
     {
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -83,6 +107,10 @@ public class DataAccessOptions
         return this;
     }
 
+    /// <summary>
+    /// Adds all evaluators that implement <see cref="IEvaluator"/> from all assemblies.
+    /// </summary>
+    /// <returns>Current <see cref="DataAccessOptions"/> instance</returns>
     public DataAccessOptions AddEvaluators()
     {
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
