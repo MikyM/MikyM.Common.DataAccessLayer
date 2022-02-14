@@ -4,11 +4,12 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<PackageId>MikyM.Common.DataAccessLayer</PackageId>
-		<Version>1.0.5</Version>
+		<Version>1.0.6</Version>
 		<Authors>Krzysztof Kupisz</Authors>
 		<PackageDescription>Data access layer.</PackageDescription>
 		<RepositoryUrl>https://github.com/MikyM/MikyM.Common.DataAccessLayer</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -17,9 +18,9 @@
 		<PackageReference Include="EFCoreSecondLevelCacheInterceptor" Version="3.3.0" />
 		<PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.2" />
-		<PackageReference Include="MikyM.Autofac.Extensions" Version="1.0.3" />
-		<PackageReference Include="MikyM.Common.Domain" Version="1.0.2" />
-		<PackageReference Include="MikyM.Common.Utilities" Version="1.0.4" />
+		<PackageReference Include="MikyM.Autofac.Extensions" Version="1.0.4" />
+		<PackageReference Include="MikyM.Common.Domain" Version="1.0.3" />
+		<PackageReference Include="MikyM.Common.Utilities" Version="1.0.5" />
 	</ItemGroup>
 
 </Project>
