@@ -1,6 +1,7 @@
 ﻿using MikyM.Common.Domain.Entities;
 using System.Collections.Generic;
 using System.Threading;
+using MikyM.Common.DataAccessLayer.Helpers;
 
 namespace MikyM.Common.DataAccessLayer;
 
@@ -12,29 +13,52 @@ public abstract class AuditableDbContext : DbContext
 {
     private string? AuditUserId { get; set; }
 
+    /// <inheritdoc />
     protected AuditableDbContext(DbContextOptions options) : base(options)
     {
     }
 
     // ReSharper disable once MemberCanBePrivate.Global
+    /// <summary>
+    /// Audit log <see cref="DbSet{TEntity}"/>
+    /// </summary>
     public DbSet<AuditLog> AuditLogs { get; set; } = null!;
 
+
+    /// <summary>
+    /// Prior to calling base SaveChanges creates an audit log entry with user Id information
+    /// </summary>
+    /// <param name="auditUserId">Id of the user responsible for the change</param>
+    /// <param name="acceptAllChangesOnSuccess">Whether to accept all changes on success</param>
+    /// <param name="cancellationToken">A cancellation token if any</param>
+    /// <returns>Number of affected entries</returns>
     public async Task<int> SaveChangesAsync(string? auditUserId, bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
         this.AuditUserId = auditUserId;
         return await this.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 
+    /// <summary>
+    /// Prior to calling base SaveChanges creates an audit log entry with user Id information
+    /// </summary>
+    /// <param name="auditUserId">Id of the user responsible for the change</param>
+    /// <param name="cancellationToken">A cancellation token if any</param>
+    /// <returns>Number of affected entries</returns>
     public async Task<int> SaveChangesAsync(string? auditUserId, CancellationToken cancellationToken = default)
     {
         this.AuditUserId = auditUserId;
         return await this.SaveChangesAsync(true, cancellationToken);
     }
 
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Creates an audit log entry
+    /// </remarks>
     public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
         CancellationToken cancellationToken = default)
     {
-        OnBeforeSaveChanges(this.AuditUserId);
+        if (!SharedState.DisableAuditEntries) OnBeforeSaveChanges(this.AuditUserId);
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 

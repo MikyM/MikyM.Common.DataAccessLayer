@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore.Internal;
+﻿using Microsoft.EntityFrameworkCore.Internal;
 
 namespace MikyM.Common.DataAccessLayer.Helpers;
 

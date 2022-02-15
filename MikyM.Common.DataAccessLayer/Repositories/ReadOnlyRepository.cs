@@ -4,10 +4,20 @@ using System.Collections.Generic;
 
 namespace MikyM.Common.DataAccessLayer.Repositories;
 
+/// <summary>
+/// Read-only repository
+/// </summary>
 /// <inheritdoc cref="IReadOnlyRepository{TEntity}"/>
 public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity> where TEntity : AggregateRootEntity
 {
+    /// <summary>
+    /// Current <see cref="DbContext"/>
+    /// </summary>
     protected readonly DbContext Context;
+
+    /// <summary>
+    /// Inner evaluator
+    /// </summary>
     private readonly ISpecificationEvaluator _specificationEvaluator;
 
     internal ReadOnlyRepository(DbContext context, ISpecificationEvaluator specificationEvaluator)
@@ -16,17 +26,20 @@ public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity> where TE
         this._specificationEvaluator = specificationEvaluator;
     }
 
+    /// <inheritdoc />
     public virtual async ValueTask<TEntity?> GetAsync(params object[] keyValues)
     {
         return await this.Context.Set<TEntity>().FindAsync(keyValues);
     }
 
+    /// <inheritdoc />
     public virtual async Task<TEntity?> GetSingleBySpecAsync(ISpecification<TEntity> specification)
     {
         return await this.ApplySpecification(specification)
             .FirstOrDefaultAsync();
     }
 
+    /// <inheritdoc />
     public virtual async Task<TProjectTo?> GetSingleBySpecAsync<TProjectTo>(
         ISpecification<TEntity, TProjectTo> specification) where TProjectTo : class
     {
@@ -34,6 +47,7 @@ public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity> where TE
             .FirstOrDefaultAsync();
     }
 
+    /// <inheritdoc />
     public virtual async Task<IReadOnlyList<TProjectTo>> GetBySpecAsync<TProjectTo>(
         ISpecification<TEntity, TProjectTo> specification) where TProjectTo : class
     {
@@ -43,6 +57,7 @@ public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity> where TE
             : specification.PostProcessingAction(result).ToList();
     }
 
+    /// <inheritdoc />
     public virtual async Task<IReadOnlyList<TEntity>> GetBySpecAsync(ISpecification<TEntity> specification)
     {
         var result = await this.ApplySpecification(specification)
@@ -51,7 +66,8 @@ public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity> where TE
             ? result
             : specification.PostProcessingAction(result).ToList();
     }
-        
+
+    /// <inheritdoc />
     public virtual async Task<long> LongCountAsync(ISpecification<TEntity>? specification = null)
     {
         if (specification is null) return await Context.Set<TEntity>().LongCountAsync();
@@ -60,11 +76,13 @@ public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity> where TE
             .LongCountAsync();
     }
 
+    /// <inheritdoc />
     public virtual async Task<IReadOnlyList<TEntity>> GetAllAsync()
     {
         return await Context.Set<TEntity>().ToListAsync();
     }
 
+    /// <inheritdoc />
     public virtual async Task<IReadOnlyList<TProjectTo>> GetAllAsync<TProjectTo>() where TProjectTo : class
     {
         return await this.ApplySpecification(new Specification<TEntity, TProjectTo>())

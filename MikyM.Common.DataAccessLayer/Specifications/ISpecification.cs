@@ -36,6 +36,11 @@ public interface ISpecification<T, TResult> : ISpecification<T> where T : class
     /// </summary>
     new Func<IEnumerable<TResult>, IEnumerable<TResult>>? PostProcessingAction { get; }
 
+    /// <summary>
+    /// Evaluates the given set of entities
+    /// </summary>
+    /// <param name="entities">Entities to evaluate</param>
+    /// <returns></returns>
     new IEnumerable<TResult> Evaluate(IEnumerable<T> entities);
 
     /// <summary>
@@ -118,6 +123,9 @@ public interface ISpecification<T> : ISpecification where T : class
     /// </summary>
     bool? IsCacheEnabled { get; }
 
+    /// <summary>
+    /// Whether pagination is enabled
+    /// </summary>
     bool IsPagingEnabled { get; }
 
     /// <summary>
@@ -155,6 +163,11 @@ public interface ISpecification<T> : ISpecification where T : class
     /// <returns></returns>
     bool IsSatisfiedBy(T entity);
 
+    /// <summary>
+    /// Evaluates the given set of entities
+    /// </summary>
+    /// <param name="entities">Entities to evaluate</param>
+    /// <returns></returns>
     IEnumerable<T> Evaluate(IEnumerable<T> entities);
 }
 

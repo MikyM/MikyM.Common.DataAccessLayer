@@ -1,21 +1,4 @@
-﻿// This file is part of Lisbeth.Bot project
-//
-// Copyright (C) 2021 Krzysztof Kupisz - MikyM
-// 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
-// 
-// You should have received a copy of the GNU Affero General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-using Autofac;
+﻿using Autofac;
 using Autofac.Core;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Concurrent;
@@ -58,13 +41,16 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext 
         _lifetimeScope = lifetimeScope;
     }
 
+    /// <inheritdoc />
     public TContext Context { get; }
 
+    /// <inheritdoc />
     public async Task UseTransaction()
     {
         _transaction ??= await Context.Database.BeginTransactionAsync();
     }
 
+    /// <inheritdoc />
     public TRepository GetRepository<TRepository>() where TRepository : class, IBaseRepository
     {
         _repositories ??= new ConcurrentDictionary<string, IBaseRepository>();
@@ -85,11 +71,13 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext 
             $"Repository of type {name} couldn't be added to and/or retrieved.");
     }
 
+    /// <inheritdoc />
     public async Task RollbackAsync()
     {
         if (_transaction is not null) await _transaction.RollbackAsync();
     }
 
+    /// <inheritdoc />
     public async Task<int> CommitAsync()
     {
         int result = await Context.SaveChangesAsync();
@@ -97,6 +85,7 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext 
         return result;
     }
 
+    /// <inheritdoc />
     public async Task<int> CommitAsync(string? userId)
     {
         int result = await Context.SaveChangesAsync(userId);
@@ -105,6 +94,7 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext 
     }
 
     // Public implementation of Dispose pattern callable by consumers.
+    /// <inheritdoc />
     public void Dispose()
     {
         Dispose(true);
