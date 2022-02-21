@@ -61,11 +61,11 @@ public abstract class AuditableDbContext : DbContext
     public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
         CancellationToken cancellationToken = default)
     {
-        if (!SharedState.DisableOnBeforeChanges) OnBeforeSaveChanges(this.AuditUserId);
+        if (!SharedState.DisableOnBeforeSaveChanges) OnBeforeSaveChanges(this.AuditUserId);
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 
-    protected void OnBeforeSaveChanges(string? userId)
+    protected virtual void OnBeforeSaveChanges(string? userId)
     {
         ChangeTracker.DetectChanges();
         var auditEntries = new List<AuditEntry>();

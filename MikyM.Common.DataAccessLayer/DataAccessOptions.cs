@@ -16,7 +16,7 @@ public class DataAccessOptions
     }
 
     private readonly ContainerBuilder _builder;
-    private bool _disableAuditEntries = false;
+    private bool _disableOnBeforeSaveChanges = false;
 
     /// <summary>
     /// Whether to cache include expressions (queries are evaluated faster).
@@ -26,13 +26,13 @@ public class DataAccessOptions
     /// <summary>
     /// Disables the insertion of audit log entries
     /// </summary>
-    public bool DisableAuditEntries
+    public bool DisableOnBeforeSaveChanges
     {
-        get => _disableAuditEntries;
+        get => _disableOnBeforeSaveChanges;
         set
         {
-            _disableAuditEntries = value;
-            SharedState.DisableOnBeforeChanges = value;
+            _disableOnBeforeSaveChanges = value;
+            SharedState.DisableOnBeforeSaveChanges = value;
         }
     }
 
