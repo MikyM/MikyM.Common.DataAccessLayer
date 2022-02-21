@@ -11,7 +11,10 @@ namespace MikyM.Common.DataAccessLayer;
 /// <inheritdoc cref="DbContext"/>
 public abstract class AuditableDbContext : DbContext
 {
-    private string? AuditUserId { get; set; }
+    /// <summary>
+    /// Id of the user responsible for changes done within this context
+    /// </summary>
+    protected string? AuditUserId { get; set; }
 
     /// <inheritdoc />
     protected AuditableDbContext(DbContextOptions options) : base(options)
@@ -32,7 +35,7 @@ public abstract class AuditableDbContext : DbContext
     /// <param name="acceptAllChangesOnSuccess">Whether to accept all changes on success</param>
     /// <param name="cancellationToken">A cancellation token if any</param>
     /// <returns>Number of affected entries</returns>
-    public async Task<int> SaveChangesAsync(string? auditUserId, bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    public virtual async Task<int> SaveChangesAsync(string? auditUserId, bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
         this.AuditUserId = auditUserId;
         return await this.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
@@ -44,7 +47,7 @@ public abstract class AuditableDbContext : DbContext
     /// <param name="auditUserId">Id of the user responsible for the change</param>
     /// <param name="cancellationToken">A cancellation token if any</param>
     /// <returns>Number of affected entries</returns>
-    public async Task<int> SaveChangesAsync(string? auditUserId, CancellationToken cancellationToken = default)
+    public virtual async Task<int> SaveChangesAsync(string? auditUserId, CancellationToken cancellationToken = default)
     {
         this.AuditUserId = auditUserId;
         return await this.SaveChangesAsync(true, cancellationToken);
