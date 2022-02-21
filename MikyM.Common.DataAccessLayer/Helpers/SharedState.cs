@@ -2,5 +2,5 @@
 
 internal static class SharedState
 {
-    internal static bool DisableAuditEntries { get; set; } = false;
+    internal static bool DisableOnBeforeChanges { get; set; } = false;
 }

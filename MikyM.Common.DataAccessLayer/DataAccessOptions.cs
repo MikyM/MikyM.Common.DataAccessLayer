@@ -32,7 +32,7 @@ public class DataAccessOptions
         set
         {
             _disableAuditEntries = value;
-            SharedState.DisableAuditEntries = value;
+            SharedState.DisableOnBeforeChanges = value;
         }
     }
 
