@@ -133,9 +133,9 @@ public static class SpecificationBuilderExtensions
     /// <typeparam name="TProperty"></typeparam>
     /// <param name="specificationBuilder"></param>
     /// <param name="includeExpression"></param>
-    public static IIncludableSpecificationBuilder<T, TProperty> Include<T, TProperty>(
+    public static IIncludableSpecificationBuilder<T, TProperty?> Include<T, TProperty>(
         this ISpecificationBuilder<T> specificationBuilder,
-        Expression<Func<T, TProperty>> includeExpression) where T : class
+        Expression<Func<T, TProperty?>> includeExpression) where T : class
         => Include(specificationBuilder, includeExpression, true);
 
     /// <summary>
@@ -148,9 +148,9 @@ public static class SpecificationBuilderExtensions
     /// <param name="specificationBuilder"></param>
     /// <param name="includeExpression"></param>
     /// <param name="condition">If false, the expression won't be added. The whole Include chain will be discarded.</param>
-    public static IIncludableSpecificationBuilder<T, TProperty> Include<T, TProperty>(
+    public static IIncludableSpecificationBuilder<T, TProperty?> Include<T, TProperty>(
         this ISpecificationBuilder<T> specificationBuilder,
-        Expression<Func<T, TProperty>> includeExpression,
+        Expression<Func<T, TProperty?>> includeExpression,
         bool condition) where T : class
     {
         if (condition)
@@ -160,7 +160,7 @@ public static class SpecificationBuilderExtensions
             ((List<IncludeExpressionInfo>)specificationBuilder.Specification.IncludeExpressions).Add(info);
         }
 
-        var includeBuilder = new IncludableSpecificationBuilder<T, TProperty>(specificationBuilder.Specification, !condition);
+        var includeBuilder = new IncludableSpecificationBuilder<T, TProperty?>(specificationBuilder.Specification, !condition);
 
         return includeBuilder;
     }

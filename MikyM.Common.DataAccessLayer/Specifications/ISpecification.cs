@@ -18,7 +18,7 @@ public interface ISpecification<T, TResult> : ISpecification<T> where T : class
     /// <summary>
     /// Automapper configuration
     /// </summary>
-    MapperConfiguration? MapperConfiguration { get; }
+    MapperConfiguration? MapperConfiguration { get; } 
 
     /// <summary>
     /// Members to expand
