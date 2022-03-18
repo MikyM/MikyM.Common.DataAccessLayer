@@ -15,9 +15,9 @@ public static class IncludableBuilderExtensions
     /// <param name="previousBuilder"></param>
     /// <param name="thenIncludeExpression">Nested member to include</param>
     /// <returns>Current <see cref="IIncludableSpecificationBuilder{T,TProperty}"/> instance</returns>
-    public static IIncludableSpecificationBuilder<TEntity, TProperty> ThenInclude<TEntity, TPreviousProperty, TProperty>(
-        this IIncludableSpecificationBuilder<TEntity, TPreviousProperty> previousBuilder,
-        Expression<Func<TPreviousProperty, TProperty>> thenIncludeExpression)
+    public static IIncludableSpecificationBuilder<TEntity, TProperty?> ThenInclude<TEntity, TPreviousProperty, TProperty>(
+        this IIncludableSpecificationBuilder<TEntity, TPreviousProperty?> previousBuilder,
+        Expression<Func<TPreviousProperty?, TProperty?>> thenIncludeExpression)
         where TEntity : class
         => ThenInclude(previousBuilder, thenIncludeExpression, true);
 
@@ -31,9 +31,9 @@ public static class IncludableBuilderExtensions
     /// <param name="thenIncludeExpression">Nested member to include</param>
     /// <param name="condition">Condition as to when should given member be included</param>
     /// <returns>Current <see cref="IIncludableSpecificationBuilder{T,TProperty}"/> instance</returns>
-    public static IIncludableSpecificationBuilder<TEntity, TProperty> ThenInclude<TEntity, TPreviousProperty, TProperty>(
-        this IIncludableSpecificationBuilder<TEntity, TPreviousProperty> previousBuilder,
-        Expression<Func<TPreviousProperty, TProperty>> thenIncludeExpression,
+    public static IIncludableSpecificationBuilder<TEntity, TProperty?> ThenInclude<TEntity, TPreviousProperty, TProperty>(
+        this IIncludableSpecificationBuilder<TEntity, TPreviousProperty?> previousBuilder,
+        Expression<Func<TPreviousProperty?, TProperty?>> thenIncludeExpression,
         bool condition)
         where TEntity : class
     {
