@@ -300,8 +300,8 @@ public class Specification<T> : ISpecification<T> where T : class
     /// </summary>
     /// <param name="includeExpression">Member to include</param>
     /// <returns><see cref="IIncludableSpecificationBuilder{T,TProperty}"/> instance</returns>
-    protected IIncludableSpecificationBuilder<T, TProperty> Include<TProperty>(
-        Expression<Func<T, TProperty>> includeExpression)
+    protected IIncludableSpecificationBuilder<T, TProperty?> Include<TProperty>(
+        Expression<Func<T, TProperty?>> includeExpression)
     {
         return this.Query.Include(includeExpression);
     }
