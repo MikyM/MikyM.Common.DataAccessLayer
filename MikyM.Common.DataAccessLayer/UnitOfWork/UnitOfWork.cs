@@ -2,6 +2,8 @@
 using Autofac.Core;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Concurrent;
+using System.Globalization;
+using System.Reflection;
 
 namespace MikyM.Common.DataAccessLayer.UnitOfWork;
 
@@ -12,9 +14,9 @@ namespace MikyM.Common.DataAccessLayer.UnitOfWork;
 public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : AuditableDbContext
 {
     /// <summary>
-    /// Inner root <see cref="ILifetimeScope"/>
+    /// Inner <see cref="ISpecificationEvaluator"/>
     /// </summary>
-    private readonly ILifetimeScope _lifetimeScope;
+    private readonly ISpecificationEvaluator _specificationEvaluator;
 
     // To detect redundant calls
     private bool _disposed;
@@ -34,11 +36,11 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext 
     /// Creates a new instance of <see cref="UnitOfWork{TContext}"/>
     /// </summary>
     /// <param name="context"><see cref="DbContext"/> to be used</param>
-    /// <param name="lifetimeScope">Root <see cref="ILifetimeScope"/></param>
-    public UnitOfWork(TContext context, ILifetimeScope lifetimeScope)
+    /// <param name="specificationEvaluator">Specification evaluator to be used</param>
+    public UnitOfWork(TContext context, ISpecificationEvaluator specificationEvaluator)
     {
         Context = context;
-        _lifetimeScope = lifetimeScope;
+        _specificationEvaluator = specificationEvaluator;
     }
 
     /// <inheritdoc />
@@ -58,14 +60,23 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext 
         var type = typeof(TRepository);
         string name = type.FullName ?? throw new InvalidOperationException();
 
-        if (_repositories.TryGetValue(name, out var repository)) return (TRepository) repository;
+        if (_repositories.TryGetValue(name, out var repository)) return (TRepository)repository;
 
-        if (_repositories.TryAdd(name,
-                _lifetimeScope.Resolve<TRepository>(new ResolvedParameter(
-                    (pi, _) => pi.ParameterType.IsAssignableTo(typeof(DbContext)), (_, _) => Context))))
+        var instance = Activator.CreateInstance(typeof(TRepository),
+            BindingFlags.NonPublic | BindingFlags.Instance, null, new object[]
+            {
+                Context, _specificationEvaluator
+            }, CultureInfo.InvariantCulture);
+
+        if (instance is null) throw new InvalidOperationException($"Couldn't create an instance of {name}");
+
+        /*_lifetimeScope.Resolve<TRepository>(new ResolvedParameter(
+        (pi, _) => pi.ParameterType.IsAssignableTo(typeof(DbContext)), (_, _) => Context))))*/
+
+        if (_repositories.TryAdd(name, (TRepository)instance))
             return (TRepository)_repositories[name];
 
-        if (_repositories.TryGetValue(name, out repository)) return (TRepository) repository;
+        if (_repositories.TryGetValue(name, out repository)) return (TRepository)repository;
 
         throw new InvalidOperationException(
             $"Repository of type {name} couldn't be added to and/or retrieved.");
