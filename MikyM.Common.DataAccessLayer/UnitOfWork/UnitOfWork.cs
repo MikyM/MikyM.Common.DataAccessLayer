@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Globalization;
 using System.Reflection;
 using MikyM.Common.DataAccessLayer.Helpers;
+using MikyM.Common.Domain.Entities;
 using MikyM.Common.Utilities.Extensions;
 
 namespace MikyM.Common.DataAccessLayer.UnitOfWork;
