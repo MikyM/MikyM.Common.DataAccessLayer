@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Reflection;
+using MikyM.Common.DataAccessLayer.Helpers;
+using MikyM.Common.Utilities.Extensions;
 
 namespace MikyM.Common.DataAccessLayer.UnitOfWork;
 
@@ -60,9 +62,20 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext 
         var type = typeof(TRepository);
         string name = type.FullName ?? throw new InvalidOperationException();
 
+        if (type.IsAbstract)
+            throw new InvalidOperationException("Given repository type is abstract");
+        if (type.IsInterface)
+        {
+            if (!UoFCache.CachedRepositoryInterfaceImplTypes.TryGetValue(type, out var implType))
+                throw new InvalidOperationException($"Couldn't find an implementation of {name}");
+
+            type = implType;
+            name = implType.FullName ?? throw new InvalidOperationException();
+        }
+
         if (_repositories.TryGetValue(name, out var repository)) return (TRepository)repository;
 
-        var instance = Activator.CreateInstance(typeof(TRepository),
+        var instance = Activator.CreateInstance(type,
             BindingFlags.NonPublic | BindingFlags.Instance, null, new object[]
             {
                 Context, _specificationEvaluator
