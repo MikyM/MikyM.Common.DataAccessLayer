@@ -62,12 +62,10 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext 
         var type = typeof(TRepository);
         string name = type.FullName ?? throw new InvalidOperationException();
 
-        if (type.IsAbstract)
-            throw new InvalidOperationException("Given repository type is abstract");
         if (type.IsInterface)
         {
             if (!UoFCache.CachedRepositoryInterfaceImplTypes.TryGetValue(type, out var implType))
-                throw new InvalidOperationException($"Couldn't find an implementation of {name}");
+                throw new InvalidOperationException($"Couldn't find a non-abstract implementation of {name}");
 
             type = implType;
             name = implType.FullName ?? throw new InvalidOperationException();
