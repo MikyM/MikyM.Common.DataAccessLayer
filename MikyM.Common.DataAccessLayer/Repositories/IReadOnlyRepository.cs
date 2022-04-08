@@ -8,7 +8,7 @@ namespace MikyM.Common.DataAccessLayer.Repositories;
 /// Read-only repository
 /// </summary>
 /// <typeparam name="TEntity">Entity that derives from <see cref="AggregateRootEntity"/></typeparam>
-public interface IReadOnlyRepository<TEntity> : IBaseRepository where TEntity : AggregateRootEntity
+public interface IReadOnlyRepository<TEntity> : IBaseRepository<TEntity> where TEntity : AggregateRootEntity
 {
     /// <summary>
     /// Gets an entity based on given primary key values

@@ -11,6 +11,11 @@ namespace MikyM.Common.DataAccessLayer.Repositories;
 public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity> where TEntity : AggregateRootEntity
 {
     /// <summary>
+    /// Entity type that this repository was created for
+    /// </summary>
+    public Type EntityType => typeof(TEntity);
+    
+    /// <summary>
     /// Current <see cref="DbContext"/>
     /// </summary>
     protected readonly DbContext Context;
@@ -19,6 +24,8 @@ public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity> where TE
     /// Inner evaluator
     /// </summary>
     private readonly ISpecificationEvaluator _specificationEvaluator;
+
+    private Type _entityType;
 
     internal ReadOnlyRepository(DbContext context, ISpecificationEvaluator specificationEvaluator)
     {

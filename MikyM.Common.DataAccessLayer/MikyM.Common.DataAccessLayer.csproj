@@ -4,7 +4,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<PackageId>MikyM.Common.DataAccessLayer</PackageId>
-		<Version>1.0.17</Version>
+		<Version>1.0.18</Version>
 		<Authors>Krzysztof Kupisz</Authors>
 		<PackageDescription>Data access layer.</PackageDescription>
 		<RepositoryUrl>https://github.com/MikyM/MikyM.Common.DataAccessLayer</RepositoryUrl>
