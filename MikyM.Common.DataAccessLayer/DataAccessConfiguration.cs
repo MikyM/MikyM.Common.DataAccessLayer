@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Autofac;
 using IdGen;
+using Microsoft.Extensions.Options;
 using MikyM.Autofac.Extensions;
 using MikyM.Common.DataAccessLayer.Helpers;
 using MikyM.Common.DataAccessLayer.Specifications.Validators;
@@ -10,7 +11,7 @@ namespace MikyM.Common.DataAccessLayer;
 /// <summary>
 /// Configuration for Data Access Layer
 /// </summary>
-public class DataAccessConfiguration
+public class DataAccessConfiguration : IOptions<DataAccessConfiguration>
 {
     /// <summary>
     /// Creates an instance of the configuration class
