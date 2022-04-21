@@ -3,6 +3,7 @@ using MikyM.Autofac.Extensions;
 using MikyM.Common.DataAccessLayer.Specifications;
 using MikyM.Common.DataAccessLayer.Specifications.Validators;
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 
 namespace MikyM.Common.DataAccessLayer;
 
@@ -19,12 +20,14 @@ public static class DependancyInjectionExtensions
     /// </remarks>
     /// <param name="builder">Current instance of <see cref="ContainerBuilder"/></param>
     /// <param name="options"><see cref="Action"/> that configures DAL.</param>
-    public static void AddDataAccessLayer(this ContainerBuilder builder, Action<DataAccessOptions>? options = null)
+    public static void AddDataAccessLayer(this ContainerBuilder builder, Action<DataAccessConfiguration>? options = null)
     {
-        var config = new DataAccessOptions(builder);
+        var config = new DataAccessConfiguration(builder);
         options?.Invoke(config);
 
         var ctorFinder = new AllConstructorsFinder();
+
+        builder.Register(x => config).As<IOptions<DataAccessConfiguration>>().SingleInstance();
 
         builder.RegisterGeneric(typeof(ReadOnlyRepository<>))
             .As(typeof(IReadOnlyRepository<>))

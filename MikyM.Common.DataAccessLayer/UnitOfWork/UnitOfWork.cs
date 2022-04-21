@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Reflection;
+using Microsoft.Extensions.Options;
 using MikyM.Common.DataAccessLayer.Helpers;
 using MikyM.Common.Domain.Entities;
 using MikyM.Common.Utilities.Extensions;
@@ -20,6 +21,10 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext 
     /// Inner <see cref="ISpecificationEvaluator"/>
     /// </summary>
     private readonly ISpecificationEvaluator _specificationEvaluator;
+    /// <summary>
+    /// Configuration
+    /// </summary>
+    private readonly IOptions<DataAccessConfiguration> _options;
 
     // To detect redundant calls
     private bool _disposed;
@@ -28,7 +33,7 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext 
     /// <summary>
     /// Repository cache
     /// </summary>
-    private ConcurrentDictionary<string, IBaseRepository>? _repositories;
+    private ConcurrentDictionary<string, Lazy<IBaseRepository>>? _repositories;
     /// <summary>
     /// Repository entity type cache
     /// </summary>
@@ -44,33 +49,33 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext 
     /// </summary>
     /// <param name="context"><see cref="DbContext"/> to be used</param>
     /// <param name="specificationEvaluator">Specification evaluator to be used</param>
-    public UnitOfWork(TContext context, ISpecificationEvaluator specificationEvaluator)
+    public UnitOfWork(TContext context, ISpecificationEvaluator specificationEvaluator, IOptions<DataAccessConfiguration> options)
     {
         Context = context;
         _specificationEvaluator = specificationEvaluator;
+        _options = options;
     }
 
     /// <inheritdoc />
     public TContext Context { get; }
 
     /// <inheritdoc />
-    public async Task UseTransaction()
-    {
-        _transaction ??= await Context.Database.BeginTransactionAsync();
-    }
+    public async Task UseTransactionAsync()
+        => _transaction ??= await Context.Database.BeginTransactionAsync();
 
     /// <inheritdoc />
     public TRepository GetRepository<TRepository>() where TRepository : class, IBaseRepository
     {
-        _repositories ??= new ConcurrentDictionary<string, IBaseRepository>();
+        _repositories ??= new ConcurrentDictionary<string, Lazy<IBaseRepository>>();
         _entityTypesOfRepositories ??= new ConcurrentDictionary<string, string>();
 
         var type = typeof(TRepository);
-        string name = type.FullName ?? throw new InvalidOperationException();
+        string name = type.FullName ?? type.Name;
         var entityType = type.GetGenericArguments().FirstOrDefault();
         if (entityType is null)
             throw new ArgumentException("Couldn't retrieve entity type from generic arguments on repository type");
-
+        var entityTypeName = entityType.FullName ?? entityType.Name;
+        
         if (type.IsInterface)
         {
             if (!UoFCache.CachedRepositoryInterfaceImplTypes.TryGetValue(type, out var implType))
@@ -79,38 +84,29 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext 
             type = implType;
             name = implType.FullName ?? throw new InvalidOperationException();
         }
-        
-        if (_repositories.TryGetValue(name, out var repository)) 
-            return (TRepository)repository;
 
-        if (_entityTypesOfRepositories.TryGetValue(entityType.Name, out _))
-            throw new InvalidOperationException(
-                "Seems like you tried to create a different type of repository (ie. both read-only and crud) for same entity type within same unit of work instance - it is not supported as it may lead to unexpected results");
-
-        var instance = Activator.CreateInstance(type,
-            BindingFlags.NonPublic | BindingFlags.Instance, null, new object[]
-            {
-                Context, _specificationEvaluator
-            }, CultureInfo.InvariantCulture);
-
-        if (instance is null) throw new InvalidOperationException($"Couldn't create an instance of {name}");
-
-        /*_lifetimeScope.Resolve<TRepository>(new ResolvedParameter(
-        (pi, _) => pi.ParameterType.IsAssignableTo(typeof(DbContext)), (_, _) => Context))))*/
-
-        var castInstance = (TRepository)instance;
-        
-        if (_repositories.TryAdd(name, castInstance))
+        // lazy to avoid creating whole repository and then discarding it due to the fact that GetOrAdd isn't atomic, creation of Lazy<T> is very cheap
+        var lazyRepository = _repositories.GetOrAdd(name, _ =>
         {
-            _entityTypesOfRepositories.TryAdd(entityType.Name, entityType.Name);
-            return (TRepository)_repositories[name];
-        }
+            if (!_entityTypesOfRepositories.TryAdd(entityTypeName, entityTypeName))
+                throw new InvalidOperationException(
+                    "Seems like you tried to create a different type of repository (ie. both read-only and crud) for same entity type within same unit of work instance - it is not supported as it may lead to unexpected results");
 
-        if (_repositories.TryGetValue(name, out repository)) 
-            return (TRepository)repository;
+            return new Lazy<IBaseRepository>(() =>
+            {
+                var instance = Activator.CreateInstance(type,
+                    BindingFlags.NonPublic | BindingFlags.Instance, null, new object[]
+                    {
+                        Context, _specificationEvaluator
+                    }, CultureInfo.InvariantCulture);
 
-        throw new InvalidOperationException(
-            $"Repository of type {name} couldn't be added to and/or retrieved.");
+                if (instance is null) throw new InvalidOperationException($"Couldn't create an instance of {name}");
+
+                return (TRepository)instance;
+            });
+        });
+
+        return (TRepository)lazyRepository.Value;
     }
 
     /// <inheritdoc />
@@ -122,6 +118,10 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext 
     /// <inheritdoc />
     public async Task<int> CommitAsync()
     {
+        if (_options.Value.OnBeforeSaveChangesActions is not null &&
+            _options.Value.OnBeforeSaveChangesActions.TryGetValue(typeof(TContext).Name, out var action))
+            await action.Invoke(this);
+
         int result = await Context.SaveChangesAsync();
         if (_transaction is not null) await _transaction.CommitAsync();
         return result;
@@ -130,6 +130,10 @@ public sealed class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext 
     /// <inheritdoc />
     public async Task<int> CommitAsync(string? userId)
     {
+        if (_options.Value.OnBeforeSaveChangesActions is not null &&
+            _options.Value.OnBeforeSaveChangesActions.TryGetValue(typeof(TContext).Name, out var action))
+            await action.Invoke(this);
+        
         int result = await Context.SaveChangesAsync(userId);
         if (_transaction is not null) await _transaction.CommitAsync();
         return result;

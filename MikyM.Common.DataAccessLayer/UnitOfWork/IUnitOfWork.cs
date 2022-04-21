@@ -3,13 +3,8 @@
 /// <summary>
 /// Unit of work definition
 /// </summary>
-/// <typeparam name="TContext">Type of context to be used</typeparam>
-public interface IUnitOfWork<TContext> : IDisposable where TContext : DbContext
+public interface IUnitOfWork
 {
-    /// <summary>
-    /// Current <see cref="DbContext"/>
-    /// </summary>
-    TContext Context { get; }
     /// <summary>
     /// Gets a repository of a given type
     /// </summary>
@@ -36,5 +31,18 @@ public interface IUnitOfWork<TContext> : IDisposable where TContext : DbContext
     /// Begins a transaction
     /// </summary>
     /// <returns>Task representing the asynchronous operation</returns>
-    Task UseTransaction();
+    Task UseTransactionAsync();
+}
+
+/// <inheritdoc cref="IUnitOfWork"/>
+/// <summary>
+/// Unit of work definition
+/// </summary>
+/// <typeparam name="TContext">Type of context to be used</typeparam>
+public interface IUnitOfWork<TContext> : IUnitOfWork, IDisposable where TContext : DbContext
+{
+    /// <summary>
+    /// Current <see cref="DbContext"/>
+    /// </summary>
+    TContext Context { get; }
 }
