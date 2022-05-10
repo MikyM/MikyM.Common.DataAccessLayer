@@ -19,10 +19,10 @@ public class DataAccessConfiguration : IOptions<DataAccessConfiguration>
     /// <param name="builder"></param>
     public DataAccessConfiguration(ContainerBuilder builder)
     {
-        this._builder = builder;
+        Builder = builder;
     }
 
-    private readonly ContainerBuilder _builder;
+    internal readonly ContainerBuilder Builder;
     private bool _disableOnBeforeSaveChanges = false;
     private Dictionary<string, Func<IUnitOfWork, Task>>? _onBeforeSaveChangesActions;
 
@@ -45,96 +45,6 @@ public class DataAccessConfiguration : IOptions<DataAccessConfiguration>
     }
 
     /// <summary>
-    /// Adds a given custom evaluator that implements <see cref="IEvaluator"/> interface.
-    /// </summary>
-    /// <typeparam name="TEvaluator">Type to register</typeparam>
-    /// <returns>Current <see cref="DataAccessConfiguration"/> instance</returns>
-    public DataAccessConfiguration AddEvaluator<TEvaluator>() where TEvaluator : class, IEvaluator
-    {
-        _builder.RegisterType(typeof(TEvaluator))
-            .As<IEvaluator>()
-            .FindConstructorsWith(new AllConstructorsFinder())
-            .SingleInstance();
-
-        return this;
-    }
-
-    /// <summary>
-    /// Adds a given custom evaluator that implements <see cref="IEvaluator"/> interface.
-    /// </summary>
-    /// <param name="evaluator">Type of the custom evaluator</param>
-    /// <returns>Current <see cref="DataAccessConfiguration"/> instance</returns>
-    public DataAccessConfiguration AddEvaluator(Type evaluator)
-    {
-        if (evaluator.GetInterface(nameof(IEvaluator)) is null)
-            throw new NotSupportedException("Registered evaluator did not implement IEvaluator interface");
-
-        _builder.RegisterType(evaluator)
-            .As<IEvaluator>()
-            .FindConstructorsWith(new AllConstructorsFinder())
-            .SingleInstance();
-
-        return this;
-    }
-
-    /// <summary>
-    /// Adds all evaluators that implement <see cref="IInMemoryEvaluator"/> from all assemblies.
-    /// </summary>
-    /// <returns>Current <see cref="DataAccessConfiguration"/> instance</returns>
-    public DataAccessConfiguration AddInMemoryEvaluators()
-    {
-        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-        {
-            _builder.RegisterAssemblyTypes(assembly)
-                .Where(x => x.GetInterface(nameof(IInMemoryEvaluator)) is not null)
-                .As<IInMemoryEvaluator>()
-                .FindConstructorsWith(new AllConstructorsFinder())
-                .SingleInstance();
-        }
-
-        return this;
-    }
-
-    /// <summary>
-    /// Adds all validators that implement <see cref="IValidator"/> from all assemblies.
-    /// </summary>
-    /// <returns>Current <see cref="DataAccessConfiguration"/> instance</returns>
-    public DataAccessConfiguration AddValidators()
-    {
-        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-        {
-            _builder.RegisterAssemblyTypes(assembly)
-                .Where(x => x.GetInterface(nameof(IValidator)) is not null)
-                .As<IValidator>()
-                .FindConstructorsWith(new AllConstructorsFinder())
-                .SingleInstance();
-        }
-
-        return this;
-    }
-
-    /// <summary>
-    /// Adds all evaluators that implement <see cref="IEvaluator"/> from all assemblies.
-    /// </summary>
-    /// <returns>Current <see cref="DataAccessConfiguration"/> instance</returns>
-    public DataAccessConfiguration AddEvaluators()
-    {
-        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-        {
-            if (assembly == typeof(IncludeEvaluator).Assembly)
-                continue;
-
-            _builder.RegisterAssemblyTypes(assembly)
-                .Where(x => x.GetInterface(nameof(IEvaluator)) is not null)
-                .As<IEvaluator>()
-                .FindConstructorsWith(new AllConstructorsFinder())
-                .SingleInstance();
-        }
-
-        return this;
-    }
-    
-    /// <summary>
     /// Actions to execute before each <see cref="IUnitOfWork.CommitAsync()"/>
     /// </summary>
     public Dictionary<string, Func<IUnitOfWork, Task>>? OnBeforeSaveChangesActions
@@ -155,25 +65,6 @@ public class DataAccessConfiguration : IOptions<DataAccessConfiguration>
             throw new NotSupportedException("Multiple actions for same context aren't supported");
         
         _onBeforeSaveChangesActions.Add(typeof(TCotext).Name, action);
-    }
-    
-    /// <summary>
-    /// Registers <see cref="IdGenerator"/> with the container
-    /// </summary>
-    /// <param name="options">Options</param>
-    /// <returns>Current <see cref="DataAccessConfiguration"/> instance</returns>
-    public DataAccessConfiguration AddSnowflakeIdGenerator(Action<IdGeneratorConfiguration> options)
-    {
-        var opt = new IdGeneratorConfiguration();
-        options(opt);
-        opt.Validate();
-
-        _builder.Register(_ => new IdGenerator(opt.GeneratorId,
-                new IdGeneratorOptions(opt.IdStructure, opt.DefaultTimeSource, opt.SequenceOverflowStrategy)))
-            .AsSelf()
-            .SingleInstance();
-
-        return this;
     }
 
     /// <summary>
