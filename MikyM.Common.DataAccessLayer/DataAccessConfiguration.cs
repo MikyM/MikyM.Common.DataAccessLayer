@@ -158,13 +158,20 @@ public class DataAccessConfiguration : IOptions<DataAccessConfiguration>
     }
     
     /// <summary>
-    /// Gets or sets settings for <see cref="IdGenerator"/>
+    /// Registers <see cref="IdGenerator"/> with the container
     /// </summary>
-    public IdGeneratorOptions? IdGeneratorOptions { get; set; }
-    /// <summary>
-    /// Gets or sets the Id for <see cref="IdGenerator"/>
-    /// </summary>
-    public int IdGeneratorId { get; set; }
+    /// <returns>Current <see cref="DataAccessConfiguration"/> instance</returns>
+    public DataAccessConfiguration AddSnowflakeIdGenerator(int generatorId, Action<IdGeneratorOptions> options)
+    {
+        var opt = new IdGeneratorOptions();
+        options(opt);
+
+        _builder.Register(_ => new IdGenerator(generatorId, opt))
+            .AsSelf()
+            .SingleInstance();
+
+        return this;
+    }
 
     /// <summary>
     /// Instance of options
