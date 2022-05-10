@@ -31,7 +31,7 @@ public class IdGeneratorConfiguration
 
     internal void Validate()
     {
-        if (GeneratorId <= 1)
+        if (GeneratorId <= 0)
             throw new InvalidOperationException("Generator Id must be equal or bigger than 1");
         if (IdStructure is null)
             throw new InvalidOperationException("Generator's Id structure must be set (not null)");
