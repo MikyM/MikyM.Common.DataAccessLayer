@@ -93,12 +93,12 @@ public static class DependancyInjectionExtensions
     /// <remarks>
     /// Automatically registers <see cref="IRepository{TEntity}"/>, <see cref="IReadOnlyRepository{TEntity}"/>, all base <see cref="IEvaluator"/> types, <see cref="ISpecificationValidator"/>, <see cref="IInMemorySpecificationEvaluator"/>, <see cref="ISpecificationEvaluator"/>, <see cref="IUnitOfWork{TContext}"/> with <see cref="ContainerBuilder"/>.
     /// </remarks>
-    /// <param name="builder">Current instance of <see cref="ContainerBuilder"/></param>
-    public static ApplicationBuilder AddIdGeneratorFactory(this ApplicationBuilder builder)
+    /// <param name="provider">Current instance of <see cref="IServiceProvider"/></param>
+    public static IServiceProvider ConfigureIdGeneratorFactory(this IServiceProvider provider)
     {
-        IdGeneratorFactory.SetFactory(() => builder.ApplicationServices.GetAutofacRoot().Resolve<IdGenerator>());
+        IdGeneratorFactory.SetFactory(() => provider.GetAutofacRoot().Resolve<IdGenerator>());
 
-        return builder;
+        return provider;
     }
     
     /// <summary>
