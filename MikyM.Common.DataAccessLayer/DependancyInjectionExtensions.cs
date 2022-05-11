@@ -88,12 +88,10 @@ public static class DependancyInjectionExtensions
     }
 
     /// <summary>
-    /// Adds Data Access Layer to the application.
+    /// Sets factory method for <see cref="IdGeneratorFactory"/>
     /// </summary>
-    /// <remarks>
-    /// Automatically registers <see cref="IRepository{TEntity}"/>, <see cref="IReadOnlyRepository{TEntity}"/>, all base <see cref="IEvaluator"/> types, <see cref="ISpecificationValidator"/>, <see cref="IInMemorySpecificationEvaluator"/>, <see cref="ISpecificationEvaluator"/>, <see cref="IUnitOfWork{TContext}"/> with <see cref="ContainerBuilder"/>.
-    /// </remarks>
     /// <param name="provider">Current instance of <see cref="IServiceProvider"/></param>
+    /// <returns>Current instance of <see cref="IServiceProvider"/></returns>
     public static IServiceProvider ConfigureIdGeneratorFactory(this IServiceProvider provider)
     {
         IdGeneratorFactory.SetFactory(() => provider.GetAutofacRoot().Resolve<IdGenerator>());
@@ -102,7 +100,7 @@ public static class DependancyInjectionExtensions
     }
     
     /// <summary>
-    /// Registers services required for pagination
+    /// Registers services required for pagination with the <see cref="ContainerBuilder"/>
     /// </summary>
     /// <param name="options">Data access configuration</param>
     /// <returns>Current instance of the <see cref="DataAccessConfiguration"/></returns>
