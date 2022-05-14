@@ -61,12 +61,12 @@ public static class DependancyInjectionExtensions
                 .AsSelf()
                 .Named<IdGenerator>(opt.Name)
                 .SingleInstance();
-        
-        dataAccessOptions.Builder.Register(_ => new IdGenerator(opt.GeneratorId,
+        else
+            dataAccessOptions.Builder.Register(_ => new IdGenerator(opt.GeneratorId,
                     new IdGeneratorOptions(opt.IdStructure, opt.DefaultTimeSource, opt.SequenceOverflowStrategy)))
                 .Named<IdGenerator>(opt.Name)
                 .SingleInstance();
-        
+
         return dataAccessOptions;
     }
 }
