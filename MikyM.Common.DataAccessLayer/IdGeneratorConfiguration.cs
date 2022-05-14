@@ -10,6 +10,11 @@ namespace MikyM.Common.DataAccessLayer;
 public class IdGeneratorConfiguration
 {
     /// <summary>
+    /// Name for the generator if registering more than one, must be unique, defaults to "SnowflakeIdGenerator"
+    /// </summary>
+    public string Name { get; set; } = "SnowflakeIdGenerator";
+    
+    /// <summary>
     /// Gets or sets the sequence overflow strategy, defaults to <see cref="SpinWait"/>
     /// </summary>
     public SequenceOverflowStrategy SequenceOverflowStrategy { get; set; } = SequenceOverflowStrategy.SpinWait;
