@@ -70,14 +70,14 @@ public static class DependancyInjectionExtensions
             dataAccessOptions.Builder.Register(_ => new IdGenerator(opt.GeneratorId,
                     new IdGeneratorOptions(opt.IdStructure, opt.DefaultTimeSource, opt.SequenceOverflowStrategy)))
                 .AsSelf()
-                .Named<IdGenerator>(opt.Name)
                 .SingleInstance();
-        else
-            dataAccessOptions.Builder.Register(_ => new IdGenerator(opt.GeneratorId,
-                    new IdGeneratorOptions(opt.IdStructure, opt.DefaultTimeSource, opt.SequenceOverflowStrategy)))
-                .Named<IdGenerator>(opt.Name)
-                .SingleInstance();
-
+        
+        dataAccessOptions.Builder.Register(_ => new IdGenerator(opt.GeneratorId,
+                new IdGeneratorOptions(opt.IdStructure, opt.DefaultTimeSource, opt.SequenceOverflowStrategy)))
+            .AsSelf()
+            .Named<IdGenerator>(opt.Name)
+            .SingleInstance();
+        
         return dataAccessOptions;
     }
 }
