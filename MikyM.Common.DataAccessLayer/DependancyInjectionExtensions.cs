@@ -29,20 +29,9 @@ public static class DependancyInjectionExtensions
     /// Adds default factory method for <see cref="IdGeneratorFactory"/>
     /// </summary>
     /// <param name="provider">Current instance of <see cref="IServiceProvider"/></param>
-    /// <returns>Current instance of <see cref="IServiceProvider"/></returns>
-    public static IServiceProvider ConfigureIdGeneratorFactory(this IServiceProvider provider)
-    {
-        IdGeneratorFactory.AddFactoryMethod(() => provider.GetAutofacRoot().Resolve<IdGenerator>());
-        return provider;
-    }
-
-    /// <summary>
-    /// Adds default factory method for <see cref="IdGeneratorFactory"/>
-    /// </summary>
-    /// <param name="provider">Current instance of <see cref="IServiceProvider"/></param>
     /// <param name="generatorName">Generator name</param>
     /// <returns>Current instance of <see cref="IServiceProvider"/></returns>
-    public static IServiceProvider ConfigureIdGeneratorFactory(this IServiceProvider provider, string generatorName)
+    public static IServiceProvider ConfigureIdGeneratorFactory(this IServiceProvider provider, string generatorName = IdGeneratorFactory.DefaultGeneratorName)
     {
         IdGeneratorFactory.AddFactoryMethod(() => provider.GetAutofacRoot().ResolveNamed<IdGenerator>(generatorName), generatorName);
         return provider;
@@ -65,12 +54,6 @@ public static class DependancyInjectionExtensions
             throw new IdGeneratorNameNotUniqueException("Generator's name must be unique");
         
         dataAccessOptions.IdGeneratorConfigurations.Add(opt);
-
-        if (dataAccessOptions.IdGeneratorConfigurations.Count == 1)
-            dataAccessOptions.Builder.Register(_ => new IdGenerator(opt.GeneratorId,
-                    new IdGeneratorOptions(opt.IdStructure, opt.DefaultTimeSource, opt.SequenceOverflowStrategy)))
-                .AsSelf()
-                .SingleInstance();
         
         dataAccessOptions.Builder.Register(_ => new IdGenerator(opt.GeneratorId,
                 new IdGeneratorOptions(opt.IdStructure, opt.DefaultTimeSource, opt.SequenceOverflowStrategy)))
