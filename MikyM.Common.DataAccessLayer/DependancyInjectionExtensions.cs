@@ -52,6 +52,8 @@ public static class DependancyInjectionExtensions
         dataAccessOptions.IdGeneratorConfigurations ??= new List<IdGeneratorConfiguration>();
         if (dataAccessOptions.IdGeneratorConfigurations.Any(x => x.Name == opt.Name))
             throw new IdGeneratorNameNotUniqueException("Generator's name must be unique");
+        
+        dataAccessOptions.IdGeneratorConfigurations.Add(opt);
 
         if (dataAccessOptions.IdGeneratorConfigurations.Count == 1)
             dataAccessOptions.Builder.Register(_ => new IdGenerator(opt.GeneratorId,
@@ -59,12 +61,12 @@ public static class DependancyInjectionExtensions
                 .AsSelf()
                 .Named<IdGenerator>(opt.Name)
                 .SingleInstance();
-        else
-            dataAccessOptions.Builder.Register(_ => new IdGenerator(opt.GeneratorId,
+        
+        dataAccessOptions.Builder.Register(_ => new IdGenerator(opt.GeneratorId,
                     new IdGeneratorOptions(opt.IdStructure, opt.DefaultTimeSource, opt.SequenceOverflowStrategy)))
                 .Named<IdGenerator>(opt.Name)
                 .SingleInstance();
-
+        
         return dataAccessOptions;
     }
 }
