@@ -6,7 +6,7 @@ namespace MikyM.Common.DataAccessLayer;
 /// <summary>
 /// Base definition of a unit of work
 /// </summary>
-public interface IUnitOfWorkBase
+public interface IUnitOfWorkBase : IDisposable
 {
     /// <summary>
     /// Gets a repository of a given type
