@@ -13,7 +13,7 @@ public interface IUnitOfWorkBase : IDisposable
     /// </summary>
     /// <typeparam name="TRepository">Type of the repository to get</typeparam>
     /// <returns>Wanted repository</returns>
-    TRepository GetRepository<TRepository>() where TRepository : class, IBaseRepository;
+    TRepository GetRepository<TRepository>() where TRepository : class, IRepositoryBase;
     /// <summary>
     /// Commits changes
     /// </summary>

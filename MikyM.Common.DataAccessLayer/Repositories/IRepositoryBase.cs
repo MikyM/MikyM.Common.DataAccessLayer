@@ -3,7 +3,7 @@
 /// <summary>
 /// Marker interface
 /// </summary>
-public interface IBaseRepository
+public interface IRepositoryBase
 {
     /// <summary>
     /// Entity type
