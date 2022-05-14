@@ -44,7 +44,7 @@ public static class DependancyInjectionExtensions
     /// <returns>Current instance of <see cref="IServiceProvider"/></returns>
     public static IServiceProvider ConfigureIdGeneratorFactory(this IServiceProvider provider, string generatorName)
     {
-        IdGeneratorFactory.AddFactoryMethod(() => provider.GetAutofacRoot().Resolve<IdGenerator>(), generatorName);
+        IdGeneratorFactory.AddFactoryMethod(() => provider.GetAutofacRoot().ResolveNamed<IdGenerator>(generatorName), generatorName);
         return provider;
     }
     
