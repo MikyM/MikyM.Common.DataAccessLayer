@@ -26,14 +26,25 @@ public static class DependancyInjectionExtensions
     }
 
     /// <summary>
-    /// Sets factory method for <see cref="IdGeneratorFactory"/>
+    /// Adds default factory method for <see cref="IdGeneratorFactory"/>
     /// </summary>
     /// <param name="provider">Current instance of <see cref="IServiceProvider"/></param>
     /// <returns>Current instance of <see cref="IServiceProvider"/></returns>
     public static IServiceProvider ConfigureIdGeneratorFactory(this IServiceProvider provider)
     {
-        IdGeneratorFactory.SetFactory(() => provider.GetAutofacRoot().Resolve<IdGenerator>());
+        IdGeneratorFactory.AddFactoryMethod(() => provider.GetAutofacRoot().Resolve<IdGenerator>());
+        return provider;
+    }
 
+    /// <summary>
+    /// Adds default factory method for <see cref="IdGeneratorFactory"/>
+    /// </summary>
+    /// <param name="provider">Current instance of <see cref="IServiceProvider"/></param>
+    /// <param name="generatorName">Generator name</param>
+    /// <returns>Current instance of <see cref="IServiceProvider"/></returns>
+    public static IServiceProvider ConfigureIdGeneratorFactory(this IServiceProvider provider, string generatorName)
+    {
+        IdGeneratorFactory.AddFactoryMethod(() => provider.GetAutofacRoot().Resolve<IdGenerator>(), generatorName);
         return provider;
     }
     

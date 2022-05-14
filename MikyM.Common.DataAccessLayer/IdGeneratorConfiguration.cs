@@ -1,6 +1,7 @@
 using System.IO;
 using System.Threading;
 using IdGen;
+using MikyM.Common.Domain;
 
 namespace MikyM.Common.DataAccessLayer;
 
@@ -10,9 +11,9 @@ namespace MikyM.Common.DataAccessLayer;
 public class IdGeneratorConfiguration
 {
     /// <summary>
-    /// Name for the generator if registering more than one, must be unique, defaults to "SnowflakeIdGenerator"
+    /// Name for the generator if registering more than one, must be unique, defaults to <see cref="IdGeneratorFactory.DefaultGeneratorName"/>
     /// </summary>
-    public string Name { get; set; } = "SnowflakeIdGenerator";
+    public string Name { get; set; } = IdGeneratorFactory.DefaultGeneratorName;
     
     /// <summary>
     /// Gets or sets the sequence overflow strategy, defaults to <see cref="SpinWait"/>
