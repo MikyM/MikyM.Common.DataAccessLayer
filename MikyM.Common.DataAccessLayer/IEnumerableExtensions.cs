@@ -7,6 +7,7 @@ namespace MikyM.Common.DataAccessLayer;
 /// <summary>
 /// <see cref="IEnumerable{T}"/> extensions.
 /// </summary>
+[PublicAPI]
 public static class IEnumerableExtensions
 {
     /// <summary>

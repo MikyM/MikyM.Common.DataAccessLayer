@@ -1,12 +1,12 @@
 ﻿namespace MikyM.Common.DataAccessLayer.Repositories;
 
 /// <summary>
-/// Marker interface
+/// Defines a base repository.
 /// </summary>
 public interface IRepositoryBase
 {
     /// <summary>
-    /// Entity type
+    /// The type of the entity held in this repository.
     /// </summary>
     Type EntityType { get; }
 }

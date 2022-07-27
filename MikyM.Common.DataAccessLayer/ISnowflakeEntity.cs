@@ -1,9 +1,8 @@
 ﻿namespace MikyM.Common.DataAccessLayer;
 
 /// <summary>
-/// Snowflake entity
+/// Defines a snowflake entity.
 /// </summary>
 public interface ISnowflakeEntity
 {
-    
 }

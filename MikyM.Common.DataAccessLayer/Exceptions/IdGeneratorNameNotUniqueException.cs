@@ -1,19 +1,18 @@
-﻿
+﻿using IdGen;
+
 namespace MikyM.Common.DataAccessLayer.Exceptions;
 
-public class IdGeneratorNameNotUniqueException : Exception
+/// <summary>
+/// Exception thrown when the name of an <see cref="IdGenerator"/> is not unique.
+/// </summary>]
+internal class IdGeneratorNameNotUniqueException : Exception
 {
-    public IdGeneratorNameNotUniqueException()
-    {
-    }
-
+    /// <summary>
+    /// Base constructor.
+    /// </summary>
+    /// <param name="message">Message associated with the exception.</param>
     public IdGeneratorNameNotUniqueException(string message)
         : base(message)
-    {
-    }
-
-    public IdGeneratorNameNotUniqueException(string message, Exception inner)
-        : base(message, inner)
     {
     }
 }

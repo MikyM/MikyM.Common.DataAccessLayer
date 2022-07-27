@@ -5,12 +5,12 @@ using Microsoft.Extensions.Options;
 namespace MikyM.Common.DataAccessLayer;
 
 /// <summary>
-/// Configuration for Data Access Layer
+/// Configuration for Data Access Layer.
 /// </summary>
 public class DataAccessConfiguration : IOptions<DataAccessConfiguration>
 {
     /// <summary>
-    /// Creates an instance of the configuration class
+    /// Creates an instance of the configuration class.
     /// </summary>
     /// <param name="builder"></param>
     public DataAccessConfiguration(ContainerBuilder builder)
@@ -22,7 +22,7 @@ public class DataAccessConfiguration : IOptions<DataAccessConfiguration>
     internal List<IdGeneratorConfiguration>? IdGeneratorConfigurations;
 
     /// <summary>
-    /// Instance of options
+    /// Instance of options.
     /// </summary>
     public DataAccessConfiguration Value => this;
 }

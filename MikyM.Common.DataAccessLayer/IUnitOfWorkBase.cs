@@ -4,30 +4,31 @@ using MikyM.Common.DataAccessLayer.Repositories;
 namespace MikyM.Common.DataAccessLayer;
 
 /// <summary>
-/// Base definition of a unit of work
+/// Defines a base Unit of Work.
 /// </summary>
+[PublicAPI]
 public interface IUnitOfWorkBase : IDisposable
 {
     /// <summary>
-    /// Gets a repository of a given type
+    /// Gets a repository of a given type.
     /// </summary>
-    /// <typeparam name="TRepository">Type of the repository to get</typeparam>
+    /// <typeparam name="TRepository">Type of the repository to get.</typeparam>
     /// <returns>Wanted repository</returns>
     TRepository GetRepository<TRepository>() where TRepository : class, IRepositoryBase;
     /// <summary>
-    /// Commits changes
+    /// Commits pending changes to the underlying database.
     /// </summary>
-    /// <returns>Number of affected rows</returns>
+    /// <returns>Number of affected rows.</returns>
     Task CommitAsync();
     /// <summary>
-    /// Commits changes
+    /// Commits pending changes to the underlying database.
     /// </summary>
-    /// <param name="userId">Id of the user that is responsible for doing changes</param>
-    /// <returns>Number of affected rows</returns>
+    /// <param name="userId">Id of the user that is responsible for doing changes.</param>
+    /// <returns>Number of affected rows.</returns>
     Task CommitAsync(string userId);
     /// <summary>
-    /// Rolls the transaction back
+    /// Rolls the current transaction back.
     /// </summary>
-    /// <returns>Task representing the asynchronous operation</returns>
+    /// <returns>Task representing the asynchronous operation.</returns>
     Task RollbackAsync();
 }

@@ -10,27 +10,27 @@ namespace MikyM.Common.DataAccessLayer;
 public class IdGeneratorConfiguration
 {
     /// <summary>
-    /// Name for the generator if registering more than one, must be unique, defaults to <see cref="IdGeneratorFactory.DefaultGeneratorName"/>
+    /// Name for the generator if registering more than one, must be unique, defaults to <see cref="IdGeneratorFactory.DefaultGeneratorName"/>.
     /// </summary>
     public string Name { get; set; } = IdGeneratorFactory.DefaultGeneratorName;
     
     /// <summary>
-    /// Gets or sets the sequence overflow strategy, defaults to <see cref="SpinWait"/>
+    /// Gets or sets the sequence overflow strategy, defaults to <see cref="SpinWait"/>.
     /// </summary>
     public SequenceOverflowStrategy SequenceOverflowStrategy { get; set; } = SequenceOverflowStrategy.SpinWait;
 
     /// <summary>
-    /// Gets or sets the generator Id, defaults to 1
+    /// Gets or sets the generator Id, defaults to 1.
     /// </summary>
     public int GeneratorId { get; set; } = 1;
     
     /// <summary>
-    /// Gets or sets the <see cref="IdStructure"/> for the generator
+    /// Gets or sets the <see cref="IdStructure"/> for the generator.
     /// </summary>
     public IdStructure? IdStructure { get; set; }
     
     /// <summary>
-    /// Gets or sets the <see cref="DefaultTimeSource"/> for the generator
+    /// Gets or sets the <see cref="DefaultTimeSource"/> for the generator.
     /// </summary>
     public DefaultTimeSource? DefaultTimeSource { get; set; }
 

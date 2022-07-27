@@ -10,12 +10,13 @@ namespace MikyM.Common.DataAccessLayer;
 /// <summary>
 /// DI extensions for <see cref="ContainerBuilder"/>
 /// </summary>
+[PublicAPI]
 public static class DependancyInjectionExtensions
 {
     /// <summary>
     /// Adds Data Access Layer to the application.
     /// </summary>
-    /// <param name="builder">Current instance of <see cref="ContainerBuilder"/></param>
+    /// <param name="builder">Current instance of <see cref="ContainerBuilder"/>.</param>
     /// <param name="options"><see cref="Action"/> that configures DAL.</param>
     public static ContainerBuilder AddDataAccessLayer(this ContainerBuilder builder, Action<DataAccessConfiguration> options)
     {
@@ -26,10 +27,10 @@ public static class DependancyInjectionExtensions
     }
 
     /// <summary>
-    /// Adds default factory method for <see cref="IdGeneratorFactory"/>
+    /// Adds default factory method for <see cref="IdGeneratorFactory"/>.
     /// </summary>
-    /// <param name="provider">Current instance of <see cref="IServiceProvider"/></param>
-    /// <param name="generatorName">Generator name</param>
+    /// <param name="provider">Current instance of <see cref="IServiceProvider"/>.</param>
+    /// <param name="generatorName">Generator's name.</param>
     /// <returns>Current instance of <see cref="IServiceProvider"/></returns>
     public static IServiceProvider ConfigureIdGeneratorFactory(this IServiceProvider provider, string generatorName = IdGeneratorFactory.DefaultGeneratorName)
     {
@@ -38,10 +39,10 @@ public static class DependancyInjectionExtensions
     }
     
     /// <summary>
-    /// Registers <see cref="IdGenerator"/> with the container, if it's the first generator being added it will be also registered AsSelf(), aside from AsName(options.Name)
+    /// Registers <see cref="IdGenerator"/> with the container, if it's the first generator being added it will be also registered AsSelf(), aside from AsName(options.Name).
     /// </summary>
-    /// <param name="dataAccessOptions"></param>
-    /// <param name="options">Id generator configuration</param>
+    /// <param name="dataAccessOptions">Options.</param>
+    /// <param name="options">Id generator configuration.</param>
     /// <returns>Current <see cref="DataAccessConfiguration"/> instance</returns>
     public static DataAccessConfiguration AddSnowflakeIdGenerator(this DataAccessConfiguration dataAccessOptions, Action<IdGeneratorConfiguration> options)
     {

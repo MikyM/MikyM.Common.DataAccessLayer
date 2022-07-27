@@ -4,17 +4,11 @@ using MikyM.Common.Domain.Entities;
 namespace MikyM.Common.DataAccessLayer;
 
 /// <summary>
-/// Snowflake entity
+/// A snowflake entity.
 /// </summary>
+[PublicAPI]
 public class SnowflakeEntity : AggregateRootEntity, ISnowflakeEntity
 {
     /// <inheritdoc/>
     public override long Id { get; protected set; } = IdGeneratorFactory.Build().CreateId();
-    
-    /// <summary>
-    /// Returns the Id of this entity
-    /// </summary>
-    /// <returns></returns>
-    public override string ToString()
-        => Id.ToString();
 }
