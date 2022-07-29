@@ -3,6 +3,7 @@
 /// <summary>
 /// Defines a base repository.
 /// </summary>
+[PublicAPI]
 public interface IRepositoryBase
 {
     /// <summary>

@@ -1,4 +1,4 @@
-﻿using MikyM.Common.Domain.Entities.Base;
+﻿using MikyM.Common.Domain.Entities;
 
 namespace MikyM.Common.DataAccessLayer;
 
