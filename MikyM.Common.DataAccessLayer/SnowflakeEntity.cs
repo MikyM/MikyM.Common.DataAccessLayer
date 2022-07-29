@@ -7,7 +7,7 @@ namespace MikyM.Common.DataAccessLayer;
 /// A snowflake entity.
 /// </summary>
 [PublicAPI]
-public class SnowflakeEntity : AggregateRootEntity, ISnowflakeEntity
+public class SnowflakeEntity : Entity, ISnowflakeEntity
 {
     /// <inheritdoc/>
     public override long Id { get; protected set; } = IdGeneratorFactory.Build().CreateId();
